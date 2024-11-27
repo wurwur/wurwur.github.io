@@ -260,6 +260,9 @@ List of a few of Hashcat’s Available Modes <em>(v6.2.5)</em></p>
 </tr>
 </tbody>
 </table></li>
+</ul>
+<p>Full list available <a href="http://harm.root.sx/table.html">here</a></p>
+<ul>
 <li>
 <p>It features an important attack flexibility. The numbers of attack vectors and methods combined with the ability to create a union of different modes of attacks, rules and masks ensures that an attacker has the ability to choose the settings that make a successful attack as likely as possible.</p>
 </li>
@@ -379,8 +382,10 @@ To attack this hash, assuming we do not know the original password, we will in t
 <pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token function">cat</span> harmony.dict 
 harmony
 2004
+morocco
+MA
 ULTRAKILL
-Wollongong
+warwick
 </code></pre>
 <p>From this dictionary, we will generate a new dictionary using two sets of rules:<br>
 <a href="https://raw.githubusercontent.com/n0kovo/hashcat-rules-collection/refs/heads/main/MISC/best64.rule">best64.rule</a> and <a href="https://raw.githubusercontent.com/n0kovo/hashcat-rules-collection/refs/heads/main/t0xic/T0XlC-insert_space_and_special_0_F.rule">special.rule</a>:</p>

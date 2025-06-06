@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>notes</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="a-modern-approach-to-nuclear-waste-burial-site-safety-assessment-through-hydro-geomechanical-and-radiological-modelling">A modern approach to nuclear waste burial site safety assessment through hydro-geomechanical and radiological modelling</h1>
+<h3 id="abstract">Abstract</h3>
+<p>Assessing the long-term safety of nuclear waste disposal in regard to its biosphere impact remains one of the most critical challenges in the continued use of nuclear fission energy production.</p>
+<p>While deep geological burial has been proven effective and safe under a set of clearly defined guidelines; however, current site assessment methods are often hindered by the usage of fragmented tools, heuristic approximations and heavy reliance on manual processing and intuition, thus introducing plausible human error failure points and oversights, heavily impeding of assessment timelines.</p>
+<p>This project proposes a modern, deterministic approach to a simulation framework for assessing the safety of nuclear waste burial sites through the combined use of hydro-geo mechanical and quantum radiological modelling within a 3D geological context.</p>
+<p>The deterministic and physically grounded simulation approach emphasizes a modular design, capable of accounting for key processes such as groundwater dynamics, heterogeneity of geological media, thermal transfers and radionuclides dispersion. The framework aims to align with current safety standards and produce a reliable, efficient, and extensible simulation engine that aids nuclear safety engineers in making rigorous evidence-based decisions, improving the accuracy, confidence and time-requirements necessary in the assessment of potential burial sites.</p>
+<h2 id="key-details">Key Details</h2>
+<ul>
+<li>Access to 3d geological data (email British Geological Survey to request access to data; LithoFrame 50/250 + UK3D for broad simulation)
+<ul>
+<li>If refused/left unanswered, use data from more broadly accessible datasets (France is an easy pick).</li>
+</ul>
+</li>
+<li>Clearly define legal requirements and standards (as per AIEA’s reports) of a safe nuclear burial site</li>
+<li>Access cross-section values for individual particles and a model for combination of complex structures (<a href="https://dx.doi.org/10.18434/T48G6X">https://dx.doi.org/10.18434/T48G6X</a> / <a href="https://doi.org/10.1063/1.556027">https://doi.org/10.1063/1.556027</a>)</li>
+<li>Access to a database of chemical structure of common geological structures and artefacts</li>
+</ul>
+<h2 id="testing-validation-rigorousness-and-viability-assessment">Testing, validation, rigorousness and viability assessment</h2>
+<p>Pick a strict incremental approach <em>(just passed the CS261 exam, as you can tell)</em>. Start by stating each component that could be in the final engine, and their importance:</p>
+<ul>
+<li>Critical, which is necessary and without which the engine is pointless</li>
+<li>Essential, without which the engine is too bare</li>
+<li>Possible, which adds coveted but not essential aspects to the engine</li>
+<li>Superfluous, which adds elements of minimal importance</li>
+</ul>
+<p>From this list of components, build a time-line requirements based on dependencies (ex: hydrological module requires the 3d data to be readable and parsed) &amp; importance (ex: a live 3d view of the data does not require any dependencies, but is extremely superfluous, so it would be at the very end of the time-line).</p>
+<hr>
+<p>For each step of production (assuming a list of modules):</p>
+<ol>
+<li>Start with the theory (algorithmic, geo-mechanical…),</li>
+<li>From which a SINGLE clearly defined and strategized development requirement will stem</li>
+<li>Associated to the requirement, build a testing-suite (mathematical equations of known values, real world data on which testing has already been completed…). This testing-suite will be appended to the list of all previous testing-suite up until that point (ensuring that no new module affects a pre-defined &amp; tested module)</li>
+<li>Proceed with the implementation while taking notes of every step (even if disregarded),</li>
+<li>Apply the full testing-suite to the new implementation</li>
+<li>If successful, proceed to the next module; if not, go back to step 1.</li>
+</ol>
+<h3 id="risk-mitigation-time-management-and-failure-strategy">Risk mitigation, time management and failure strategy</h3>
+<p>The incremental approach ensures that even with the worst time management possible, a deliverable with its associated up-to-date report will be available (although the report will obviously require supervision and refinement).</p>
+<blockquote>
+<p>TODO: ask DCS for possible energy drinks funding</p>
+</blockquote>
+<h2 id="current-ideas">Current ideas:</h2>
+<p>This is just a list to keep track of all the things going through my head, they’re unrefined, unstructured, and being here does not necessarily imply importance or relevance to the project</p>
+<ul>
+<li>Using Bezier volume patches? Allows for very VERY fast block ray tracing since the lines (better than voxel grids)</li>
+<li>TOUGH + FLAC3D ? Maybe too much</li>
+<li>/!\ Block ray-tracing, only start on that when the 3d framework is set</li>
+<li>Prove Beer–Lambert law?? Its basic physics but dont know if really relevant</li>
+<li>Build big table for geological structures</li>
+<li>Effective attenuation coefficient function (+ test agaisnt nist xcom)</li>
+</ul>
+</div>
+</body>
+
+</html>

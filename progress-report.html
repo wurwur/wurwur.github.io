@@ -187,8 +187,7 @@
         <div class="stackedit__toc">
           
 <ul>
-<li><a href="#progress-report-deterministic-ray-tracing-gamma-transport-solver-for-nuclear-waste-burial-safety">Progress Report: Deterministic Ray-Tracing Gamma Transport Solver for Nuclear Waste Burial Safety</a></li>
-<li><a href="#draft-1">DRAFT 1</a>
+<li><a href="#progress-report-deterministic-ray-tracing-gamma-transport-solver-for-nuclear-waste-burial-safety">Progress Report: Deterministic Ray-Tracing Gamma Transport Solver for Nuclear Waste Burial Safety</a>
 <ul>
 <li><a href="#abstract">Abstract</a></li>
 </ul>
@@ -268,7 +267,13 @@
 <li><a href="#project-management-approach">Project Management Approach</a>
 <ul>
 <li><a href="#updated-gantt-chart">Updated Gantt Chart</a></li>
-<li><a href="#benchmark-results-table">Benchmark results table</a></li>
+<li><a href="#benchmark-results-table">Benchmark results table</a>
+<ul>
+<li><a href="#tests">Tests</a></li>
+<li><a href="#runs">Runs</a></li>
+</ul>
+</li>
+<li><a href="#run-metadata">Run Metadata</a></li>
 <li><a href="#project-specifications">Project Specifications</a></li>
 </ul>
 </li>
@@ -283,26 +288,21 @@
 <p>Harmony<br>
 Word count <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≈</mo><mn>4300</mn></mrow><annotation encoding="application/x-tex">\approx 4300</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.48312em; vertical-align: 0em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 0.64444em; vertical-align: 0em;"></span><span class="mord">4300</span></span></span></span></span> words (excluding references and appendix).</p>
 </blockquote>
-<h1 id="draft-1"><mark>DRAFT 1</mark></h1>
-<p>Because this is a draft, some things have not been done yet (mostly figures, their descriptions and maybe code snippets). Some typos may persist, and sometimes things are said oddly. It’ll be a problem for future me however :D</p>
 <div class="page-toc"></div>
 <h2 id="abstract">Abstract</h2>
-<p>This project aims at developing a deterministic and auditable gamma radiation transport solver to support the safety assessment of deep geological disposal of nuclear waste.</p>
-<p>The disposal of long-lived radionuclide requires credible modelling the environmental transport and streaming of the gamma radiation over long time horizons to ensure its isolation from the environment under given certainty measures.<br>
+<p>This project aims at developing a deterministic and auditable gamma-radiation transport solver to support the safety assessment of deep geological disposal of nuclear waste.</p>
+<p>The disposal of long-lived radionuclide requires credible modelling of the environmental transport and streaming of the gamma radiation over long time horizons, the goal being to ensure its isolation from the environment under given certainty measures.<br>
 To ensure public trust and compliance with regulations, decision regarding the assessment of nuclear waste burial safety requires procedures which are reproducible and explainable<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup>. Our program solves targets fixed-source photon transport in 3D voxel geometries as collision-order (Neumann-series) expansion under known uncertainty.</p>
 <p>Current iteration implements the core, structured around per-segment analytic integration and accumulation. A two-pass tally pipeline is implemented (segment record emission, then stable sort + ordered reduction) and tested against a benchmark suite. This suite encodes multiple physics sanity checks, convergence tests, and determinism regression tests. Finally, a dashboard for the interpretation of 2D/3D fields and performance counters has also been implemented.</p>
 <p>This report documents the current state of the implementation, formalizes the mathematical foundations and convergence properties of the approach, and provides a detailed plan for the remaining work.</p>
 <div class="page-break"></div>
 <h1 id="motivation-and-context">Motivation and Context</h1>
 <h2 id="why-this-problem-matters">Why this problem matters</h2>
-<blockquote>
-<p>This is more or less that slides presentation I did during our meeting but without the memes and in written form</p>
-</blockquote>
 <p>Safe disposal of high-level radioactive waste is challenging due to the timescales (10<sup>3</sup> - 10<sup>6</sup> years), which, combined with the many uncertainties factors (radiation, geology, hydrology, heat transfer, chemical transport, erosion…), can contribute to devastating consequences if the radionuclides were to leak to the surrounding environment<sup class="footnote-ref"><a href="#fn2" id="fnref2">2</a></sup>. As such, both modelling quality and transparency is a central focus of the problem.<br>
-Most national programmes rely on deep geological disposal, but site characterization and safety cases require a chain of evidence that spans measurement, modelling, and uncertainty management.<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2</a></sup> In Europe, radioactive waste policy is tied to decommissioning and long-term stewardship, with public funding and oversight frameworks that make traceability and repeatability important for confidence.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> However, due to their nature, very few of these frameworks are ever conducted to completion due to the time-consuming nature of the realization of such a long chain of evidence, as well as often abandoned due to the constant rise of costs.</p>
+Most national programmes rely on deep geological disposal. However, site characterization and safety cases require a chain of evidence that spans measurement, modelling, and uncertainty management.<sup class="footnote-ref"><a href="#fn2" id="fnref2:1">2</a></sup> In Europe, radioactive waste policy is tied to decommissioning and long-term stewardship, with public funding and oversight frameworks that make traceability and repeatability important for confidence.<sup class="footnote-ref"><a href="#fn3" id="fnref3">3</a></sup> However, due to their nature, very few of these frameworks are ever conducted to completion due to the time-consuming nature of the realization of such a long chain of evidence, as well as often abandoned due to the constant rise of costs.</p>
 <p>Recent events have reinforced that energy security<sup class="footnote-ref"><a href="#fn4" id="fnref4">4</a></sup> and geopolitical risk can rapidly reshape the perceived value and risks of nuclear infrastructure as a mean for independent national energy source.<br>
-As such, our approach can contribute at reducing meaningfully the iteration cycle and associated cost of site safety assessment</p>
-<p>Nonetheless, we note that this project does not aim at providing a definitive answer as to if a burial site is suitable and safe or not. This project aims at streamlining a process which so far has been too slow (by hand / MCNP) or too inaccurate (pure discretization methods) with the goal of providing nuclear waste experts suitable and realistic data to make an assessment of a nuclear waste site, thus reducing both costs and timelines.</p>
+As such, our approach can contribute to reducing meaningfully the iteration cycle and associated cost of site safety assessment.</p>
+<p>Nonetheless, we note that this project does not aim at providing a definitive answer as to if a burial site is suitable and safe or not. This project aims at streamlining a process which so far has been too slow (by hand / MCNP<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup>) or too inaccurate (pure discretization methods) with the goal of providing nuclear waste experts suitable and realistic data to make an assessment of a nuclear waste site, thus reducing both costs and timelines.</p>
 <div class="page-break"></div>
 <h2 id="project-goals">Project goals</h2>
 <ul>
@@ -330,17 +330,17 @@ As such, our approach can contribute at reducing meaningfully the iteration cycl
 <div class="page-break"></div>
 <h1 id="background-research-and-related-work">Background Research and Related Work</h1>
 <h2 id="existing-tools-and-ecosystems">Existing tools and ecosystems</h2>
-<p>Photon transport is commonly solved via Monte Carlo codes (Geant4, GATE, MCNP-like systems) and deterministic methods (discrete ordinates <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mi>N</mi></msub></mrow><annotation encoding="application/x-tex">S_N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.83333em; vertical-align: -0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.328331em;"><span class="" style="top: -2.55em; margin-left: -0.05764em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span></span>, method of characteristics, hybrid approaches).<br>
+<p>Photon transport is commonly solved via Monte Carlo codes (Geant4, GATE, MCNP-like systems<sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup>) and deterministic methods (discrete ordinates <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mi>N</mi></msub></mrow><annotation encoding="application/x-tex">S_N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.83333em; vertical-align: -0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.328331em;"><span class="" style="top: -2.55em; margin-left: -0.05764em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span></span>, method of characteristics, hybrid approaches<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup>).<br>
 Monte Carlo provides high fidelity and flexible physics but can be expensive and produces stochastic uncertainty that must be controlled by sampling.<br>
 In contrast, deterministic transport provides deterministic outputs and can converge rapidly for certain regimes, at the cost of potential discretization artefacts and the need to manage angular resolution.</p>
-<p>This project’s “ray tracing” approach is closest to a method of characteristics / discrete ordinates sweep, where a finite set of directions approximates the angular integral. The aim is to provide an implementation of rigorous mathematical background over modular and modern simulation techniques for efficient and accurate productions over very large models. For cross-section data and photon interaction models, canonical references include PDG summaries and NIST XCOM; these support the later stage of constructing multi-group material libraries.<sup class="footnote-ref"><a href="#fn5" id="fnref5">5</a></sup> <sup class="footnote-ref"><a href="#fn6" id="fnref6">6</a></sup></p>
+<p>The aim of this project is to provide an implementation of rigorous mathematical background over modular and modern simulation techniques for efficient and accurate productions over very large models: faster than Monte Carlo simulations, more accurate than current discretization methods<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup>. For cross-section data and photon interaction models, canonical references include PDG summaries and NIST XCOM; these support the later stage of constructing multi-group material libraries.<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> <sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup></p>
 <h2 id="determinism-and-gpu-transport">Determinism and GPU transport</h2>
-<p>A key differentiator is the strict determinism requirement. Many GPU transport implementations use atomic floating-point tallies<sup class="footnote-ref"><a href="#fn7" id="fnref7">7</a></sup>, where scheduling differences can change accumulation order and therefore output.</p>
+<p>A key differentiator of nuclear waste simulation is the strict determinism requirement<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup>. Many GPU transport implementations use atomic floating-point tallies<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup>, where scheduling differences can change accumulation order and therefore output.</p>
 <p>In a safety workflow, results must be explainable and re-computable by a third party. If a “rerun” can drift by small floating-point differences due to nondeterministic accumulation, it becomes difficult to attribute changes to code, parameters, or genuine physics effects. Furthermore, small drifts may accumulate to large differences over large settings. Therefore, by enforcing a fixed ordering (ray ordering, segment emission ordering, and voxel reduction ordering) the project makes regression testing meaningful: if an output changes, it is assured to be due to an intentional code or parameter change.</p>
 <div class="page-break"></div>
 <h2 id="geological-disposal-and-domain-context">Geological disposal and domain context</h2>
-<p>International guidance and national programmes (such as ANDRA<sup class="footnote-ref"><a href="#fn8" id="fnref8">8</a></sup> in France, IRSN<sup class="footnote-ref"><a href="#fn9" id="fnref9">9</a></sup> studies, or IAEA publications<sup class="footnote-ref"><a href="#fn10" id="fnref10">10</a></sup>) emphasize the need for site characterization, environmental modelling, and transparent safety-case argumentation.</p>
-<p>While the current solver focuses on radiation transport, the architecture is designed with modularity in mind. As such, given time and resources, more complex modules can be implemented.</p>
+<p>International guidance and national programmes (such as ANDRA<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup> in France, IRSN<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup> studies, or IAEA publications<sup class="footnote-ref"><a href="#fn11" id="fnref11:1">11</a></sup>) emphasize the need for site characterization, environmental modelling, and transparent safety-case argumentation.</p>
+<p>While the current solver focuses on radiation transport, the architecture is designed with modularity in mind. As such, given time and resources, more complex modules<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> can be implemented.</p>
 <div class="page-break"></div>
 <h1 id="updated-specification-and-requirements">Updated Specification and Requirements</h1>
 <h2 id="functional-requirements">Functional requirements</h2>
@@ -364,12 +364,12 @@ In contrast, deterministic transport provides deterministic outputs and can conv
 <li>
 <p>Benchmark suite with:</p>
 <ul>
-<li>correctness sanity checks (vacuum / homogeneous attenuation),</li>
-<li>convergence tests (angular resolution, grid refinement, collision order),</li>
-<li>determinism regression tests,</li>
-<li>performance counters and NSI/LNSI reporting.</li>
-<li>harder standard non-atomic benchmark tests</li>
-<li>accuracy against known sites</li>
+<li>Correctness sanity checks (vacuum / homogeneous attenuation),</li>
+<li>Convergence tests (angular resolution, grid refinement, collision order),</li>
+<li>Determinism regression tests,</li>
+<li>Performance counters and NSI/LNSI reporting.</li>
+<li>Harder standard non-atomic benchmark tests<sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup> <sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup></li>
+<li>Accuracy against known sites</li>
 </ul>
 </li>
 <li>
@@ -377,14 +377,11 @@ In contrast, deterministic transport provides deterministic outputs and can conv
 </li>
 </ul>
 <h2 id="non-functional-requirements">Non-functional requirements</h2>
-<blockquote>
-<p>In a bubble what it has to be</p>
-</blockquote>
 <p>The simulation thus strives to be transparent, robust, maintainable, and usable while retaining its deterministic nature.</p>
 <div class="page-break"></div>
 <h2 id="changes-from-the-initial-plan">Changes from the initial plan</h2>
 <h3 id="bgs-data-licensing">BGS Data Licensing</h3>
-<p>BGS data licensing to access datasets was initially refused; after some exchanges however they agreed to provide an academic licence, which is now in progress via the university, and may take several weeks (as of the time of writing). The initial plan already outlined this scenario and the mitigating strategy.</p>
+<p>BGS data licensing to access datasets was initially refused. However, after some exchanges, academic licence is currently being processed via the university, and may take several weeks (as of the time of writing). The initial plan already outlined this scenario and the mitigating strategy.</p>
 <p>Concretely, as the initial access was refused, we approached the generation of the geological media using interpolation procedures (Krigging) based on open-source and freely available borehole, fault/dykes and litho stratigraphic data. This approach introduces many uncertainties regarding the accuracy of the geological interpolation and its structure in the real world. As such, the simulation would need to explicitly state more uncertainty, and the results would hold little to no scientific value as is in regard to the safety assessment. As our scope is mainly axed towards the ray-tracing engine, the geological module would have been downgraded in the specifications to a visualization &amp; approximation module rather than rigorous scientific data.</p>
 <p>Furthermore, other options outlined in the project specifications implied switching the “by default” scope of the project to other regions with publicly available data. Although these datasets exist and could be used/licensed, this outcome remained less than ideal.</p>
 <p>Luckily, none of them will be necessary for the final implementation, assuming the licensing does not fail. However, due to the delay in data access and double change in specifications, the timeline has been greatly impacted (when the actual BGS datasets is received, all previous geological implementations and code must be disregarded, and that time wasted). But our previous Gantt Chart was made with the possibility of such outcomes, and thus allows for those changes without loss of content.</p>
@@ -512,13 +509,13 @@ I_{\text{avg}}=
 \dfrac{I_{\text{in}}-I_{\text{out}}}{\Sigma_t ds}, &amp; \Sigma_t&gt;0,\\ 
 I_{\text{in}}, &amp; \Sigma_t=0,  \end{cases}  
 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.88888em; vertical-align: -0.19444em;"></span><span class="mord">Δ</span><span class="mord"><span class="mord mathnormal">ϕ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.301108em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 2.05744em; vertical-align: -0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.37144em;"><span class="" style="top: -2.314em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.22222em;">V</span></span></span><span class="" style="top: -3.23em;"><span class="pstrut" style="height: 3em;"></span><span class="frac-line" style="border-bottom-width: 0.04em;"></span></span><span class="" style="top: -3.677em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right: 0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.151392em;"><span class="" style="top: -2.55em; margin-left: -0.07847em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">avg</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.286108em;"><span class=""></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.686em;"><span class=""></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right: 2em;"></span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.151392em;"><span class="" style="top: -2.55em; margin-left: -0.07847em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">avg</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.286108em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 3.63633em; vertical-align: -1.56817em;"></span><span class="minner"><span class="mopen"><span class="delimsizing mult"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 2.05002em;"><span class="" style="top: -2.49999em;"><span class="pstrut" style="height: 3.15em;"></span><span class="delimsizinginner delim-size4"><span class="">⎩</span></span></span><span class="" style="top: -2.49199em;"><span class="pstrut" style="height: 3.15em;"></span><span class="" style="height: 0.016em; width: 0.889em;"><svg width="0.889em" height="0.016em" style="width:0.889em" viewBox="0 0 889 16" preserveAspectRatio="xMinYMin"><path d="M384 0 H504 V16 H384z M384 0 H504 V16 H384z"></path></svg></span></span><span class="" style="top: -3.15001em;"><span class="pstrut" style="height: 3.15em;"></span><span class="delimsizinginner delim-size4"><span class="">⎨</span></span></span><span class="" style="top: -4.29201em;"><span class="pstrut" style="height: 3.15em;"></span><span class="" style="height: 0.016em; width: 0.889em;"><svg width="0.889em" height="0.016em" style="width:0.889em" viewBox="0 0 889 16" preserveAspectRatio="xMinYMin"><path d="M384 0 H504 V16 H384z M384 0 H504 V16 H384z"></path></svg></span></span><span class="" style="top: -4.30002em;"><span class="pstrut" style="height: 3.15em;"></span><span class="delimsizinginner delim-size4"><span class="">⎧</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.55002em;"><span class=""></span></span></span></span></span></span><span class="mord"><span class="mtable"><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 2.06817em;"><span class="" style="top: -4.06817em;"><span class="pstrut" style="height: 3.36033em;"></span><span class="mord"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.36033em;"><span class="" style="top: -2.314em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord"><span class="mord">Σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.280556em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mord mathnormal">d</span><span class="mord mathnormal">s</span></span></span><span class="" style="top: -3.23em;"><span class="pstrut" style="height: 3em;"></span><span class="frac-line" style="border-bottom-width: 0.04em;"></span></span><span class="" style="top: -3.677em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right: 0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.317502em;"><span class="" style="top: -2.55em; margin-left: -0.07847em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">in</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.280556em;"><span class="" style="top: -2.55em; margin-left: -0.07847em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">out</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.836em;"><span class=""></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mpunct">,</span></span></span><span class="" style="top: -2.22417em;"><span class="pstrut" style="height: 3.36033em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right: 0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.317502em;"><span class="" style="top: -2.55em; margin-left: -0.07847em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">in</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mpunct">,</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.56817em;"><span class=""></span></span></span></span></span><span class="arraycolsep" style="width: 1em;"></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 2.06817em;"><span class="" style="top: -4.06817em;"><span class="pstrut" style="height: 3.36033em;"></span><span class="mord"><span class="mord"><span class="mord">Σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.280556em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord">0</span><span class="mpunct">,</span></span></span><span class="" style="top: -2.22417em;"><span class="pstrut" style="height: 3.36033em;"></span><span class="mord"><span class="mord"><span class="mord">Σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.280556em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mord">0</span><span class="mpunct">,</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.56817em;"><span class=""></span></span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></span></p>
-<p>where the second branch corresponds to the exact vacuum limit. Deterministic voxel traversal and segment ordering are enforced using a DDA<sup class="footnote-ref"><a href="#fn11" id="fnref11">11</a></sup> algorithm, ensuring reproducibility without stochastic noise in an efficient implementation.</p>
+<p>where the second branch corresponds to the exact vacuum limit. Deterministic voxel traversal and segment ordering are enforced using a DDA<sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> algorithm, ensuring reproducibility without stochastic noise in an efficient implementation.</p>
 <blockquote>
-<p>On a higher-level note, this is a very fast implementation of per-voxel attenuation following Beer-Lambert<sup class="footnote-ref"><a href="#fn12" id="fnref12">12</a></sup><br>
+<p>On a higher-level note, this is a very fast implementation of per-voxel attenuation following Beer-Lambert<sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup><br>
 <span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>I</mi><mo>=</mo><msub><mi>I</mi><mn>0</mn></msub><msup><mi>e</mi><mrow><mo>−</mo><mi>d</mi> <msub><mi mathvariant="normal">Σ</mi><mi>t</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex">I=I_0 e^{-d \, \Sigma_t}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord mathnormal" style="margin-right: 0.07847em;">I</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 1.04911em; vertical-align: -0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.301108em;"><span class="" style="top: -2.55em; margin-left: -0.07847em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.899108em;"><span class="" style="top: -3.113em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mathnormal mtight">d</span><span class="mspace mtight" style="margin-right: 0.195167em;"></span><span class="mord mtight"><span class="mord mtight">Σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.296343em;"><span class="" style="top: -2.357em; margin-left: 0em; margin-right: 0.0714286em;"><span class="pstrut" style="height: 2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.143em;"><span class=""></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></p>
 </blockquote>
 <h3 id="first-collision-source-and-single-scatter-phi_1">First-collision source and single scatter <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>ϕ</mi><mn>1</mn></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(\phi_1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">ϕ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.301108em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span></h3>
-<p>For isotropic scattering, the first-collision source represents particles that travel uncollided to a point and then undergo their first interaction. It is given by</p>
+<p>For isotropic scattering, the first-collision source represents particles that travel uncollided to a point and then undergo their first interaction. It is given by<sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup></p>
 <p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>q</mi><mn>1</mn></msub><mo stretchy="false">(</mo><mi mathvariant="bold">r</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi mathvariant="normal">Σ</mi><mi>s</mi></msub><mo stretchy="false">(</mo><mi mathvariant="bold">r</mi><mo stretchy="false">)</mo> <msub><mi>ϕ</mi><mn>0</mn></msub><mo stretchy="false">(</mo><mi mathvariant="bold">r</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">  
 q_1(\mathbf{r}) = \Sigma_s(\mathbf{r})\,\phi_0(\mathbf{r})
 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.03588em;">q</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.301108em;"><span class="" style="top: -2.55em; margin-left: -0.03588em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathbf">r</span><span class="mclose">)</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord"><span class="mord">Σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.151392em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathbf">r</span><span class="mclose">)</span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord"><span class="mord mathnormal">ϕ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.301108em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathbf">r</span><span class="mclose">)</span></span></span></span></span></span></p>
@@ -537,7 +534,7 @@ q_1(\mathbf{r}) = \Sigma_s(\mathbf{r})\,\phi_0(\mathbf{r})
 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 2.05744em; vertical-align: -0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.37144em;"><span class="" style="top: -2.314em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord mathrm">d</span><span class="mord mathnormal">s</span></span></span><span class="" style="top: -3.23em;"><span class="pstrut" style="height: 3em;"></span><span class="frac-line" style="border-bottom-width: 0.04em;"></span></span><span class="" style="top: -3.677em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord mathrm">d</span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.328331em;"><span class="" style="top: -2.55em; margin-left: -0.07847em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">Ω</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.686em;"><span class=""></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right: 0.222222em;"></span></span><span class="base"><span class="strut" style="height: 0.83333em; vertical-align: -0.15em;"></span><span class="mord"><span class="mord">Σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.280556em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.328331em;"><span class="" style="top: -2.55em; margin-left: -0.07847em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">Ω</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right: 0.222222em;"></span></span><span class="base"><span class="strut" style="height: 2.113em; vertical-align: -0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.427em;"><span class="" style="top: -2.314em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord">4</span><span class="mord mathnormal" style="margin-right: 0.03588em;">π</span></span></span><span class="" style="top: -3.23em;"><span class="pstrut" style="height: 3em;"></span><span class="frac-line" style="border-bottom-width: 0.04em;"></span></span><span class="" style="top: -3.677em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right: 0.03588em;">q</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.301108em;"><span class="" style="top: -2.55em; margin-left: -0.03588em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathbf">r</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.686em;"><span class=""></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.328331em;"><span class="" style="top: -2.55em; margin-left: -0.02691em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">Ω</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span></span></span></p>
 <p>which admits an exact closed-form update over each segment, then deposited using the same track-length estimator as for <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ϕ</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">\phi_0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.88888em; vertical-align: -0.19444em;"></span><span class="mord"><span class="mord mathnormal">ϕ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.301108em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span></span>.</p>
 <h3 id="collision-order-neumann-expansion">Collision-order Neumann expansion</h3>
-<p>Mathematically, the LBTE can be written in operator form as</p>
+<p>Mathematically, the LBTE can be written in operator<sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup> form as:</p>
 <p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>L</mi><mi>ψ</mi><mo>=</mo><mi>S</mi><mo>+</mo><mi mathvariant="script">S</mi><mi>ψ</mi><mo separator="true">,</mo><mspace width="2em"></mspace><mi>L</mi><mo>=</mo><mi mathvariant="normal">Ω</mi><mo>⋅</mo><mi mathvariant="normal">∇</mi><mo>+</mo><msub><mi mathvariant="normal">Σ</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">
 L\psi = S + \mathcal{S}\psi,  
 \qquad  
@@ -562,8 +559,6 @@ L=\Omega\cdot\nabla+\Sigma_t
 <p>In the implementation, we implicitly tally by quadrature over:<br>
 <span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>ϕ</mi><mi>n</mi></msub><mo stretchy="false">(</mo><mi mathvariant="bold">x</mi><mo stretchy="false">)</mo><mo>≈</mo><munderover><mo>∑</mo><mrow><mi>m</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>N</mi><mi mathvariant="normal">Ω</mi></msub></munderover><msub><mi>w</mi><mi>m</mi></msub><mo separator="true">,</mo><msub><mi>ψ</mi><mi>n</mi></msub><mo stretchy="false">(</mo><mi mathvariant="bold">x</mi><mo separator="true">,</mo><msub><mi mathvariant="normal">Ω</mi><mi>m</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\phi_n(\mathbf{x}) \approx \sum_{m=1}^{N_\Omega} w_m,\psi_n(\mathbf{x},\Omega_m)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1em; vertical-align: -0.25em;"></span><span class="mord"><span class="mord mathnormal">ϕ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.151392em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathbf">x</span><span class="mclose">)</span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 3.10675em; vertical-align: -1.26711em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.83964em;"><span class="" style="top: -1.88289em; margin-left: 0em;"><span class="pstrut" style="height: 3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span class="" style="top: -3.05001em;"><span class="pstrut" style="height: 3.05em;"></span><span class=""><span class="mop op-symbol large-op">∑</span></span></span><span class="" style="top: -4.31131em; margin-left: 0em;"><span class="pstrut" style="height: 3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right: 0.10903em;">N</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.3448em;"><span class="" style="top: -2.35671em; margin-left: -0.10903em; margin-right: 0.0714286em;"><span class="pstrut" style="height: 2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">Ω</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.143293em;"><span class=""></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.26711em;"><span class=""></span></span></span></span></span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.151392em;"><span class="" style="top: -2.55em; margin-left: -0.02691em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.03588em;">ψ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.151392em;"><span class="" style="top: -2.55em; margin-left: -0.03588em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathbf">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord"><span class="mord">Ω</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.151392em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">m</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span></span><br>
 With <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>N</mi><mi mathvariant="normal">Ω</mi></msub></mrow><annotation encoding="application/x-tex">N_\Omega</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.83333em; vertical-align: -0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.10903em;">N</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.328331em;"><span class="" style="top: -2.55em; margin-left: -0.10903em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">Ω</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span></span> the directions parameter.</p>
-<p>For notational simplicity, let:<br>
-<span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>ϕ</mi><mrow><mo stretchy="false">(</mo><mi>N</mi><mo stretchy="false">)</mo></mrow></msup><mo>=</mo><munderover><mo>∑</mo><mrow><mi>n</mi><mo>=</mo><mn>0</mn></mrow><mi>N</mi></munderover><msub><mi>ϕ</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">\phi^{(N)}=\sum_{n=0}^N{\phi_n}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 1.13244em; vertical-align: -0.19444em;"></span><span class="mord"><span class="mord mathnormal">ϕ</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height: 0.938em;"><span class="" style="top: -3.113em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathnormal mtight" style="margin-right: 0.10903em;">N</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 3.09545em; vertical-align: -1.26711em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 1.82834em;"><span class="" style="top: -1.88289em; margin-left: 0em;"><span class="pstrut" style="height: 3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mrel mtight">=</span><span class="mord mtight">0</span></span></span></span><span class="" style="top: -3.05001em;"><span class="pstrut" style="height: 3.05em;"></span><span class=""><span class="mop op-symbol large-op">∑</span></span></span><span class="" style="top: -4.30001em; margin-left: 0em;"><span class="pstrut" style="height: 3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right: 0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 1.26711em;"><span class=""></span></span></span></span></span><span class="mspace" style="margin-right: 0.166667em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">ϕ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.151392em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span></span></span></span></p>
 </blockquote>
 <h3 id="series-convergence-ratio">Series convergence ratio</h3>
 <p>Each term <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ϕ</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">\phi_n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.88888em; vertical-align: -0.19444em;"></span><span class="mord"><span class="mord mathnormal">ϕ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.151392em;"><span class="" style="top: -2.55em; margin-left: 0em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span></span> represents particles that have undergone exactly <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.43056em; vertical-align: 0em;"></span><span class="mord mathnormal">n</span></span></span></span></span> scattering interactions prior to observation. A standard sufficient condition for convergence of the Neumann series is</p>
@@ -611,12 +606,7 @@ r_n=\frac{||\phi_n||}{||\phi_{n-1}||}
 <div class="page-break"></div>
 <h2 id="dashboard-modernization">Dashboard modernization</h2>
 <p>The dynamic dashboard of statistical interpretation has been implemented as three internal modules (<code>RunIndex</code>, <code>VolumeCache</code>, and individual view classes). It supports per-run / field overview, slices, 3D views, error plotting, performance overview, and textual access to the metadata parameters of the given run.</p>
-<p><img src="http://wurwur.github.io/diss_figs/Figure_0.png" alt=""></p>
-<blockquote>
-<p>Do i explain what the dashboard is useful for? Feel like thats a bit obvious<br>
-Also chose to not give more details as to what the future dashboard will be like/add, because i kind of have no idea right now<br>
-So much is possible and valid and it’ll simply be a decision to make when the time comes. The decision sounds more appropriate to make when the implementation is actually done than now.</p>
-</blockquote>
+<p><img src="http://wurwur.github.io/diss_figs/Figure_0.png" alt="dashboard lol"></p>
 <div class="page-break"></div>
 <h2 id="current-limitations">Current limitations</h2>
 <ul>
@@ -640,12 +630,8 @@ So much is possible and valid and it’ll simply be a decision to make when the 
 <li>Predictably convergent: collision-order terms decrease at an expected rate under subcritical scattering, enabling a stopping criterion.</li>
 <li>Reproducible: deterministic across repeated runs.</li>
 <li>Auditable: metadata hashes, schema versioning, and stable naming allow outputs to be traced to inputs and code version.</li>
-<li>Cost-effective: performance counters and NSI/LNSI provide transparent scaling indicators.</li>
+<li>Cost-effective: performance counters and NSI/LNSI<sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup> provide transparent scaling indicators.</li>
 </ul>
-<blockquote>
-<p>Note: should probably define was NSI/LNSI is here? Took the idea from: <a href="https://www.tandfonline.com/doi/epdf/10.1080/00295450.2021.1871995?needAccess=true">https://www.tandfonline.com/doi/epdf/10.1080/00295450.2021.1871995?needAccess=true</a><br>
-It stands as “nanoseconds per integration (understand here ray traced)”, and LNSI is “levelized NSI”, so NSI divided by the number of threads used</p>
-</blockquote>
 <h2 id="benchmark-suite-overview">Benchmark suite overview</h2>
 <p>Benchmarks are encoded as test definitions in <code>bench/tests.py</code> and run via <code>main.py</code>. Each benchmark exists to isolate a specific failure mode:</p>
 <ul>
@@ -672,6 +658,9 @@ It stands as “nanoseconds per integration (understand here ray traced)”, and
 Later, we aim at implicitly benchmarking combination of those atomic features through the usage of more complex/realistic scenarios.</p>
 <h2 id="results-table">Results table</h2>
 <h3 id="on-gpu">On GPU</h3>
+<blockquote>
+<p>RTX 5070 Mobile, CUDA 13.1</p>
+</blockquote>
 
 <table>
 <thead>
@@ -699,12 +688,6 @@ Later, we aim at implicitly benchmarking combination of those atomic features th
 <td>angular_convergence_512_to_8192</td>
 <td>PASS</td>
 <td align="center">0.47</td>
-<td align="center">OK</td>
-</tr>
-<tr>
-<td>phi0_convergence_sweep</td>
-<td>PASS</td>
-<td align="center">0.72</td>
 <td align="center">OK</td>
 </tr>
 <tr>
@@ -744,18 +727,6 @@ Later, we aim at implicitly benchmarking combination of those atomic features th
 <td align="center">OK</td>
 </tr>
 <tr>
-<td>multigroup_downscatter</td>
-<td>PASS</td>
-<td align="center">6.44</td>
-<td align="center">OK</td>
-</tr>
-<tr>
-<td>gpu_determinism</td>
-<td>PASS</td>
-<td align="center">0.45</td>
-<td align="center">OK</td>
-</tr>
-<tr>
 <td>cpu_determinism</td>
 <td>PASS</td>
 <td align="center">0.00</td>
@@ -764,6 +735,9 @@ Later, we aim at implicitly benchmarking combination of those atomic features th
 </tbody>
 </table><div class="page-break"></div>
 <h3 id="on-cpu">On CPU</h3>
+<blockquote>
+<p>Intel Ultra 9 275HX (24) @ 3.0GHz</p>
+</blockquote>
 
 <table>
 <thead>
@@ -836,12 +810,7 @@ Later, we aim at implicitly benchmarking combination of those atomic features th
 <td align="center">OK</td>
 </tr>
 </tbody>
-</table><blockquote>
-<p>TODO: merge those two tables, add a little block explaining what the test actually does and maybe speedup % CPU/GPU<br>
-Not all tests were run on CPU cause i dont have a few hours to spare rn :’)<br>
-Will run tonight while at work</p>
-</blockquote>
-<div class="page-break"></div>
+</table><div class="page-break"></div>
 <h1 id="planned-work">Planned Work</h1>
 <h2 id="prioritized-deliverables">Prioritized deliverables</h2>
 <p><strong>Must have</strong></p>
@@ -868,7 +837,7 @@ Will run tonight while at work</p>
 <p><strong>Should have</strong></p>
 <ul>
 <li>
-<p>Expand validation with harder benchmarks and comparisons against known sites and datasets (OECD/NEA packages, CASL VERA-style benchmarks where relevant to shielding, and external datasets such as West et al.)<sup class="footnote-ref"><a href="#fn13" id="fnref13">13</a></sup>.</p>
+<p>Expand validation with harder benchmarks and comparisons against known sites and datasets (OECD/NEA packages, CASL VERA-style benchmarks where relevant to shielding, and external datasets such as West et al.)<sup class="footnote-ref"><a href="#fn16" id="fnref16:1">16</a></sup>.</p>
 </li>
 <li>
 <p>Export/import of runs to avoid recomputation and to support reproducible scenario sharing.</p>
@@ -880,10 +849,10 @@ Will run tonight while at work</p>
 <p><strong>Could have</strong></p>
 <ul>
 <li>
-<p>Time evolution: erosion, hydrogeology, heat transfer coupling (data permitting, Darcy-type flow relevance), and scenario ensembles.<sup class="footnote-ref"><a href="#fn14" id="fnref14">14</a></sup></p>
+<p>Time evolution: erosion, hydrogeology, heat transfer coupling (data permitting, Darcy-type flow relevance), and scenario ensembles.<sup class="footnote-ref"><a href="#fn15" id="fnref15:1">15</a></sup></p>
 </li>
 <li>
-<p>Advanced visualization pipelines (Plotly / PlotJuggler???) for interactive web dashboards.</p>
+<p>Advanced visualization pipelines (Plotly / PlotJuggler<sup class="footnote-ref"><a href="#fn23" id="fnref23">23</a></sup>) for interactive web dashboards.</p>
 </li>
 </ul>
 <p><strong>Won’t have (for this project timeframe)</strong></p>
@@ -891,16 +860,13 @@ Will run tonight while at work</p>
 <li>Full coupled multi-physics with validated long-term climate models; the focus is radiation transport + integration-ready geology representation.</li>
 </ul>
 <blockquote>
-<p>Id make the point that if climate change varies enough in the future that the entire scenario shifts drastically, we’d all be dead anyways</p>
+<p>I’d make the point that if climate change was to vary enough in the future that the entire scenario shifts drastically, we’d all be dead anyways.</p>
 </blockquote>
 <h2 id="risks-and-mitigation">Risks and mitigation</h2>
 <p>Because of the remaining uncertainty of BGS licensing, we maintain synthetic geology pipelines and placeholders currently implemented, ready to swap to real data when available. If never available, the project is built to support a diversion of requirements to maintain a working auditable and provable ray-tracing engine without the explicit support / implementation of “realistic” geological media. #TooBad</p>
 <div class="page-break"></div>
 <h1 id="example-run">Example Run</h1>
-<blockquote>
-<p>Missing figure description and explanation i know</p>
-</blockquote>
-<h3 id="test-run-phi1_grid_fine">Test run: phi1_grid_fine</h3>
+<h3 id="test-run-phi1_grid_fine">Test run: <code>phi1_grid_fine</code></h3>
 <p><span class="katex--display"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>Paremeters</mtext><mo>:</mo><mrow><mo fence="true">{</mo><mtable rowspacing="0.3600em" columnalign="left left" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mtable rowspacing="0.1600em" columnalign="left left left" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mtext>grid</mtext></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mo lspace="0em" rspace="0em">=</mo></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>128</mn><mo>×</mo><mn>128</mn><mo>×</mo><mn>128</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mtext>h</mtext></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mo lspace="0em" rspace="0em">=</mo></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>1</mn></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mtext>dirs</mtext></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mo lspace="0em" rspace="0em">=</mo></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>2048</mn></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><msub><mi>σ</mi><mi>t</mi></msub></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mo lspace="0em" rspace="0em">=</mo></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>0.05</mn></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><msub><mi>σ</mi><mi>s</mi></msub></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mo lspace="0em" rspace="0em">=</mo></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>0.03</mn></mstyle></mtd></mtr></mtable></mstyle></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">
 \text{Paremeters} :
 \begin{cases}
@@ -913,13 +879,345 @@ Will run tonight while at work</p>
 \end{array}
 \end{cases}
 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text"><span class="mord">Paremeters</span></span><span class="mspace" style="margin-right: 0.277778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right: 0.277778em;"></span></span><span class="base"><span class="strut" style="height: 6.00004em; vertical-align: -2.75002em;"></span><span class="minner"><span class="mopen"><span class="delimsizing mult"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 3.25002em;"><span class="" style="top: -1.36599em;"><span class="pstrut" style="height: 3.216em;"></span><span class="delimsizinginner delim-size4"><span class="">⎩</span></span></span><span class="" style="top: -1.35799em;"><span class="pstrut" style="height: 3.216em;"></span><span class="" style="height: 1.216em; width: 0.889em;"><svg width="0.889em" height="1.2160000000000002em" style="width:0.889em" viewBox="0 0 889 1216" preserveAspectRatio="xMinYMin"><path d="M384 0 H504 V1216 H384z M384 0 H504 V1216 H384z"></path></svg></span></span><span class="" style="top: -3.21601em;"><span class="pstrut" style="height: 3.216em;"></span><span class="delimsizinginner delim-size4"><span class="">⎨</span></span></span><span class="" style="top: -4.35801em;"><span class="pstrut" style="height: 3.216em;"></span><span class="" style="height: 1.216em; width: 0.889em;"><svg width="0.889em" height="1.2160000000000002em" style="width:0.889em" viewBox="0 0 889 1216" preserveAspectRatio="xMinYMin"><path d="M384 0 H504 V1216 H384z M384 0 H504 V1216 H384z"></path></svg></span></span><span class="" style="top: -5.56602em;"><span class="pstrut" style="height: 3.216em;"></span><span class="delimsizinginner delim-size4"><span class="">⎧</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 2.75002em;"><span class=""></span></span></span></span></span></span><span class="mord"><span class="mtable"><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 3.25em;"><span class="" style="top: -5.25em;"><span class="pstrut" style="height: 5.25em;"></span><span class="mord"><span class="mord"><span class="mtable"><span class="arraycolsep" style="width: 0.5em;"></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 3.25em;"><span class="" style="top: -5.41em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord text"><span class="mord">grid</span></span></span></span><span class="" style="top: -4.21em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord text"><span class="mord">h</span></span></span></span><span class="" style="top: -3.01em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord text"><span class="mord">dirs</span></span></span></span><span class="" style="top: -1.81em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right: 0.03588em;">σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.280556em;"><span class="" style="top: -2.55em; margin-left: -0.03588em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span><span class="" style="top: -0.61em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right: 0.03588em;">σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 0.151392em;"><span class="" style="top: -2.55em; margin-left: -0.03588em; margin-right: 0.05em;"><span class="pstrut" style="height: 2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 0.15em;"><span class=""></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 2.75em;"><span class=""></span></span></span></span></span><span class="arraycolsep" style="width: 0.5em;"></span><span class="arraycolsep" style="width: 0.5em;"></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 3.25em;"><span class="" style="top: -5.41em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mrel">=</span></span></span><span class="" style="top: -4.21em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mrel">=</span></span></span><span class="" style="top: -3.01em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mrel">=</span></span></span><span class="" style="top: -1.81em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mrel">=</span></span></span><span class="" style="top: -0.61em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mrel">=</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 2.75em;"><span class=""></span></span></span></span></span><span class="arraycolsep" style="width: 0.5em;"></span><span class="arraycolsep" style="width: 0.5em;"></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height: 3.25em;"><span class="" style="top: -5.41em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord">128</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mord">128</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right: 0.222222em;"></span><span class="mord">128</span></span></span><span class="" style="top: -4.21em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord">1</span></span></span><span class="" style="top: -3.01em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord">2048</span></span></span><span class="" style="top: -1.81em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord">0.05</span></span></span><span class="" style="top: -0.61em;"><span class="pstrut" style="height: 3em;"></span><span class="mord"><span class="mord">0.03</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 2.75em;"><span class=""></span></span></span></span></span><span class="arraycolsep" style="width: 0.5em;"></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height: 2.75em;"><span class=""></span></span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></span></p>
-<p><img src="http://wurwur.github.io/diss_figs/Figure_2.png" alt="enter image description here"></p>
 <blockquote>
-<p>Pretty ay? I know</p>
+<p>Full run metadata: see Appendix: Run Metadata</p>
 </blockquote>
-<p><img src="http://wurwur.github.io/diss_figs/Figure_3.png" alt="enter image description here"><br>
-<img src="http://wurwur.github.io/diss_figs/Figure_4.png" alt="enter image description here"></p>
+<p><img src="http://wurwur.github.io/diss_figs/Figure_2.png" alt="enter image description here"></p>
+<p><strong>Figure 1.</strong> <em>Distance Weighted Overview over run “<code>phi1_grid_fine</code>”. [Unpublished]. University of Warwick.</em></p>
+<blockquote>
+<p>Bottom layer displays the mean radiation per vertical slice of voxel<br>
+Top layer attributes displays the mean radiation factored by distance to origin per vertical slice of voxel (the furtherst from radiation source, the more meaningful the radiation)</p>
+</blockquote>
+<p><img src="http://wurwur.github.io/diss_figs/Figure_3.png" alt="enter image description here"></p>
+<p><strong>Figure 2.</strong> <em>Dynamic Orthogonal Slice Planes over run “<code>phi1_grid_fine</code>”. [Unpublished]. University of Warwick.</em></p>
+<p><img src="http://wurwur.github.io/diss_figs/Figure_4.png" alt="enter image description here"></p>
+<p><strong>Figure 3.</strong> <em>Static Single-Axis Layered View over run “<code>phi1_grid_fine</code>”. [Unpublished]. University of Warwick.</em></p>
 <p><img src="http://wurwur.github.io/diss_figs/Figure_5.png" alt="enter image description here"></p>
+<p><strong>Figure 4.</strong> <em>Iso cloud Graph of Density per Intensity over run “<code>phi1_grid_fine</code>”. [Unpublished]. University of Warwick.</em></p>
+<blockquote>
+<p>Pretty ay? I know<br>
+Runtime is in <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi></mrow><annotation encoding="application/x-tex">s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.43056em; vertical-align: 0em;"></span><span class="mord mathnormal">s</span></span></span></span></span>.</p>
+</blockquote>
+<h1 id="appraisal-and-reflection">Appraisal and Reflection</h1>
+<p>I really love rocks and irradiation. No further reflections regarding how to optimize workflow or throughput, everything is going smoothly and according to plan.</p>
+<h1 id="legal-social-ethical-and-professional-considerations">Legal, Social, Ethical, and Professional Considerations</h1>
+<p>There are no human-subject consent or ethical issues. The primary legal/professional consideration is the licensing of BGS data and ensuring that redistribution and derived products respect the terms of use.</p>
+<h1 id="project-management-approach">Project Management Approach</h1>
+<p>A waterfall approach is used deliberately: each milestone is intended to be a self-contained valid deliverable that remains valuable even if downstream data integration is delayed, and benchmark suite is strictly incremental across iterations. Version control is managed with git; milestones are captured with tags and supported by reproducible benchmark runs. Supervisor input (Hi Claire :) ) has guided prioritization and helped keep the scope realistic (mostly by asking me over and over “but how will you prove it”).</p>
+<div class="page-appendix-start"></div>
+<h2 id="updated-gantt-chart">Updated Gantt Chart</h2>
+<p><img src="https://wurwur.github.io/timeline.png" alt="timeline"></p>
+<blockquote>
+<p>The above Gantt Chart does not implement changes described in the updated specification and requirements.</p>
+</blockquote>
+<h2 id="benchmark-results-table">Benchmark results table</h2>
+<h3 id="tests">Tests</h3>
+
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th align="center">Status</th>
+<th align="center">Runtime (s)</th>
+<th align="center">Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vacuum_sigma0</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">0.45</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>homogeneous_sigma005</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">0.24</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>angular_convergence_512_to_8192</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">0.47</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>phi0_convergence_sweep</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">0.72</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>scatter1_prod_sanity</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">310.56</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>scatter1_ref_vs_prod_small</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">10.70</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>scatter1_sigma_s_scaling</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">134.10</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>scatter1_source_scaling</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">130.12</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>phi1_angular_convergence</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">272.65</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>phi1_grid_refinement</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">72.74</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>multigroup_downscatter</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">6.44</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>gpu_determinism</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">0.45</td>
+<td align="center">OK</td>
+</tr>
+<tr>
+<td><code>cpu_determinism</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="yellowgreen"><mtext>PASS</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{yellowgreen}\text{PASS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.68333em; vertical-align: 0em;"></span><span class="mord text" style="color: yellowgreen;"><span class="mord" style="color: yellowgreen;">PASS</span></span></span></span></span></span></td>
+<td align="center">0.00</td>
+<td align="center">OK</td>
+</tr>
+</tbody>
+</table><h3 id="runs">Runs</h3>
+
+<table>
+<thead>
+<tr>
+<th>Run</th>
+<th align="center">Cached</th>
+<th align="center">Warn</th>
+<th align="center">Runtime (s)</th>
+<th align="center">NSI (ns/seg)</th>
+<th align="center">LNSI (ns/seg)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vacuum_sigma0</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.45</td>
+<td align="center">9.452e+02</td>
+<td align="center">3.939e+01</td>
+</tr>
+<tr>
+<td><code>homogeneous_sigma</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.24</td>
+<td align="center">9.879e+02</td>
+<td align="center">4.116e+01</td>
+</tr>
+<tr>
+<td><code>angconv_small</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.22</td>
+<td align="center">3.706e+03</td>
+<td align="center">1.544e+02</td>
+</tr>
+<tr>
+<td><code>angconv_large</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.25</td>
+<td align="center">2.610e+02</td>
+<td align="center">1.087e+01</td>
+</tr>
+<tr>
+<td><code>phi0_convergence_dirs_512</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.23</td>
+<td align="center">3.900e+03</td>
+<td align="center">1.625e+02</td>
+</tr>
+<tr>
+<td><code>phi0_convergence_dirs_2048</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.25</td>
+<td align="center">1.057e+03</td>
+<td align="center">4.405e+01</td>
+</tr>
+<tr>
+<td><code>phi0_convergence_dirs_8192</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.23</td>
+<td align="center">2.438e+02</td>
+<td align="center">1.016e+01</td>
+</tr>
+<tr>
+<td><code>scatter1_ref</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">244.35</td>
+<td align="center">5.731e+00</td>
+<td align="center">2.388e-01</td>
+</tr>
+<tr>
+<td><code>scatter1_prod</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">66.20</td>
+<td align="center">5.789e+00</td>
+<td align="center">2.412e-01</td>
+</tr>
+<tr>
+<td><code>scatter1_ref_small</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">5.57</td>
+<td align="center">8.319e+00</td>
+<td align="center">3.466e-01</td>
+</tr>
+<tr>
+<td><code>scatter1_prod_small</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">5.13</td>
+<td align="center">1.448e+01</td>
+<td align="center">6.032e-01</td>
+</tr>
+<tr>
+<td><code>scatter1_sigma_s_low</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">69.86</td>
+<td align="center">6.108e+00</td>
+<td align="center">2.545e-01</td>
+</tr>
+<tr>
+<td><code>scatter1_sigma_s_high</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">64.25</td>
+<td align="center">5.618e+00</td>
+<td align="center">2.341e-01</td>
+</tr>
+<tr>
+<td><code>scatter1_source_low</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">65.66</td>
+<td align="center">5.741e+00</td>
+<td align="center">2.392e-01</td>
+</tr>
+<tr>
+<td><code>scatter1_source_high</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">64.47</td>
+<td align="center">5.637e+00</td>
+<td align="center">2.349e-01</td>
+</tr>
+<tr>
+<td><code>phi1_angconv_small</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">17.36</td>
+<td align="center">6.072e+00</td>
+<td align="center">2.530e-01</td>
+</tr>
+<tr>
+<td><code>phi1_angconv_large</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">255.29</td>
+<td align="center">5.580e+00</td>
+<td align="center">2.325e-01</td>
+</tr>
+<tr>
+<td><code>phi1_grid_coarse</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">9.09</td>
+<td align="center">6.404e+00</td>
+<td align="center">2.668e-01</td>
+</tr>
+<tr>
+<td><code>phi1_grid_fine</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">63.65</td>
+<td align="center">5.565e+00</td>
+<td align="center">2.319e-01</td>
+</tr>
+<tr>
+<td><code>multigroup_downscatter</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">6.44</td>
+<td align="center">4.811e+00</td>
+<td align="center">2.004e-01</td>
+</tr>
+<tr>
+<td><code>gpu_determinism_a</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.24</td>
+<td align="center">2.652e+05</td>
+<td align="center">1.105e+04</td>
+</tr>
+<tr>
+<td><code>gpu_determinism_b</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.21</td>
+<td align="center">2.364e+05</td>
+<td align="center">9.852e+03</td>
+</tr>
+<tr>
+<td><code>cpu_determinism_omp1_a</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.00</td>
+<td align="center">1.520e+02</td>
+<td align="center">1.520e+02</td>
+</tr>
+<tr>
+<td><code>cpu_determinism_omp1_b</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.00</td>
+<td align="center">1.791e+02</td>
+<td align="center">1.791e+02</td>
+</tr>
+<tr>
+<td><code>cpu_determinism_omp2</code></td>
+<td align="center"><span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle mathcolor="cyan"><mtext>yes</mtext></mstyle></mrow><annotation encoding="application/x-tex">\color{cyan}\text{yes}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.625em; vertical-align: -0.19444em;"></span><span class="mord text" style="color: cyan;"><span class="mord" style="color: cyan;">yes</span></span></span></span></span></span></td>
+<td align="center"></td>
+<td align="center">0.00</td>
+<td align="center">3.550e+02</td>
+<td align="center">1.775e+02</td>
+</tr>
+</tbody>
+</table><h2 id="run-metadata">Run Metadata</h2>
 <pre class=" language-json"><code class="prism  language-json"><span class="token punctuation">{</span>
   <span class="token string">"bench"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
     <span class="token string">"bench_hash"</span><span class="token punctuation">:</span> <span class="token string">"dc0552bfacba01d223e257d6ba74ed2aecaca3465d979968a3a0950f068aa50e"</span><span class="token punctuation">,</span>
@@ -1025,82 +1323,56 @@ Will run tonight while at work</p>
   <span class="token string">"total_segments"</span><span class="token punctuation">:</span> <span class="token number">11436762000</span><span class="token punctuation">,</span>
   <span class="token string">"transport_time_ns"</span><span class="token punctuation">:</span> <span class="token number">63651100040.0</span>
 </code></pre>
-<blockquote>
-<p>Runtime is in <span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi></mrow><annotation encoding="application/x-tex">s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.43056em; vertical-align: 0em;"></span><span class="mord mathnormal">s</span></span></span></span></span>.</p>
-</blockquote>
-<h1 id="appraisal-and-reflection">Appraisal and Reflection</h1>
-<p>I really love rocks and getting irradiated.</p>
-<h1 id="legal-social-ethical-and-professional-considerations">Legal, Social, Ethical, and Professional Considerations</h1>
-<p>There are no human-subject consent or ethical issues. The primary legal/professional consideration is the licensing of BGS data and ensuring that redistribution and derived products respect the terms of use.</p>
-<h1 id="project-management-approach">Project Management Approach</h1>
-<p>A waterfall approach is used deliberately: each milestone is intended to be a self-contained valid deliverable that remains valuable even if downstream data integration is delayed, and benchmark suite is strictly incremental across iterations. Version control is managed with git; milestones are captured with tags and supported by reproducible benchmark runs. Supervisor input (Hi Claire :) ) has guided prioritization and helped keep the scope realistic (mostly by asking me over and over “but how will you prove it”).</p>
-<blockquote>
-<p>TODO: Actually cite<br>
-<sup class="footnote-ref"><a href="#fn15" id="fnref15">15</a></sup> <sup class="footnote-ref"><a href="#fn16" id="fnref16">16</a></sup> <sup class="footnote-ref"><a href="#fn17" id="fnref17">17</a></sup> <sup class="footnote-ref"><a href="#fn18" id="fnref18">18</a></sup> <sup class="footnote-ref"><a href="#fn19" id="fnref19">19</a></sup> <sup class="footnote-ref"><a href="#fn20" id="fnref20">20</a></sup> <sup class="footnote-ref"><a href="#fn21" id="fnref21">21</a></sup> <sup class="footnote-ref"><a href="#fn13" id="fnref13:1">13</a></sup> <sup class="footnote-ref"><a href="#fn14" id="fnref14:1">14</a></sup> <sup class="footnote-ref"><a href="#fn22" id="fnref22">22</a></sup> <sup class="footnote-ref"><a href="#fn23" id="fnref23">23</a></sup><br>
-In-text. I know where I used them etc, just need to actually put them in</p>
-</blockquote>
-<div class="page-appendix-start"></div>
-<h2 id="updated-gantt-chart">Updated Gantt Chart</h2>
-<blockquote>
-<p>Have to draw it</p>
-</blockquote>
-<h2 id="benchmark-results-table">Benchmark results table</h2>
-<blockquote>
-<p>Giant table with the data yipee</p>
-</blockquote>
 <h2 id="project-specifications">Project Specifications</h2>
-<blockquote>
-<p>attaching the other pdf in prod</p>
-</blockquote>
 <div class="page-appendix-end"></div>
 <hr class="footnotes-sep">
 <section class="footnotes">
 <ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p><a href="https://www.iaea.org/sites/default/files/21404640216.pdf">https://www.iaea.org/sites/default/files/21404640216.pdf</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+<li id="fn1" class="footnote-item"><p>Lennemann, Wm.L., Parker, H.E. and West, P.J. (1976). Management of radioactive wastes. <em>Annals of Nuclear Energy</em>, [online] 3(5-6), pp.285–295. doi:<a href="https://doi.org/10.1016/0306-4549(76)90055-4">https://doi.org/10.1016/0306-4549(76)90055-4</a>. <a href="#fnref1" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn2" class="footnote-item"><p>(<a href="https://www.iaea.org/sites/default/files/21404640216.pdf">https://www.iaea.org/sites/default/files/21404640216.pdf</a> <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a></p>
+<li id="fn2" class="footnote-item"><p>Lennemann, Wm.L., Parker, H.E. and West, P.J. (1976). Management of radioactive wastes. <em>Annals of Nuclear Energy</em>, [online] 3(5-6), pp.285–295. doi:<a href="https://doi.org/10.1016/0306-4549(76)90055-4">https://doi.org/10.1016/0306-4549(76)90055-4</a>. <a href="#fnref2" class="footnote-backref">↩︎</a> <a href="#fnref2:1" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn3" class="footnote-item"><p>(<a href="https://eur-lex.europa.eu/EN/legal-content/summary/nuclear-facilities-and-radioactive-waste-eu-decommissioning-assistance-2021-2027.html">https://eur-lex.europa.eu/EN/legal-content/summary/nuclear-facilities-and-radioactive-waste-eu-decommissioning-assistance-2021-2027.html</a>) <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+<li id="fn3" class="footnote-item"><p>European Union (EUR-Lex) (2021). <em>Nuclear facilities and radioactive waste — EU decommissioning assistance (2021-2027) | EUR-Lex</em>. [online] <a href="http://Europa.eu">Europa.eu</a>. Available at: <a href="https://eur-lex.europa.eu/EN/legal-content/summary/nuclear-facilities-and-radioactive-waste-eu-decommissioning-assistance-2021-2027.html">https://eur-lex.europa.eu/EN/legal-content/summary/nuclear-facilities-and-radioactive-waste-eu-decommissioning-assistance-2021-2027.html</a> [Accessed 22 Jan. 2026]. <a href="#fnref3" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn4" class="footnote-item"><p><a href="https://ieefa.org/resources/eu-risks-new-energy-dependence-us-could-supply-80-its-lng-imports-2030">https://ieefa.org/resources/eu-risks-new-energy-dependence-us-could-supply-80-its-lng-imports-2030</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+<li id="fn4" class="footnote-item"><p>Institute for Energy Economics and Financial Analysis (2026). <em>EU risks new energy dependence as US could supply 80% of its LNG imports by 2030</em>. [online] <a href="http://Ieefa.org">Ieefa.org</a>. Available at: <a href="https://ieefa.org/resources/eu-risks-new-energy-dependence-us-could-supply-80-its-lng-imports-2030">https://ieefa.org/resources/eu-risks-new-energy-dependence-us-could-supply-80-its-lng-imports-2030</a>. <a href="#fnref4" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn5" class="footnote-item"><p><a href="https://pdg.lbl.gov/2019/reviews/rpp2019-rev-cross-section-formulae.pdf">https://pdg.lbl.gov/2019/reviews/rpp2019-rev-cross-section-formulae.pdf</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+<li id="fn5" class="footnote-item"><p>J. A. Kulesza, T. R. Adams, J. C. Armstrong, S. R. Bolding, F. B. Brown, J. S. Bull, T. P. Burke, A. R. Clark, R. A. Forster III, J. F. Giron, A. S. Grieve, C. J. Josey, R. L. Martz, G. W. McKinney, E. J. Pearson, M. E. Rising, C. J. Solomon Jr., S. Swaminarayan, T. J. Trahan, C. A. Weaver, S. C. Wilson, A. J. Zukaitis. <strong>MCNP®  Code Version 6.3.1 Theory &amp; User Manual</strong>. Los Alamos National Laboratory Tech. Rep. LA-UR-24-24602, Rev. 1. Los Alamos, NM, USA. May 2024. <a href="#fnref5" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn6" class="footnote-item"><p><a href="https://www.nist.gov/pml/xcom-photon-cross-sections-database">https://www.nist.gov/pml/xcom-photon-cross-sections-database</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+<li id="fn6" class="footnote-item"><p>K. Ogawa and S. Maeda, “A Monte Carlo method using octree structure in photon and electron transport,” in IEEE Transactions on Nuclear Science, vol. 42, no. 6, pp. 2322-2326, Dec. 1995, doi: 10.1109/23.489435. <a href="#fnref6" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn7" class="footnote-item"><p><a href="https://github.com/NVIDIA/cccl/issues/886">https://github.com/NVIDIA/cccl/issues/886</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+<li id="fn7" class="footnote-item"><p>Wang A, Maslowski A, Wareing T, Star-Lack J, Schmidt TG. A fast, linear Boltzmann transport equation solver for computed tomography dose calculation (Acuros CTD). Med Phys. 2019 Feb;46(2):925-933. doi: 10.1002/mp.13305. Epub 2018 Dec 24. PMID: 30471131; PMCID: PMC6367051. <a href="#fnref7" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn8" class="footnote-item"><p>(<a href="https://www.andra.fr/sites/default/files/2023-04/Pi%C3%A8ce%2007-VPRS-PARTIE%202%20Description-Volume%2004-Site%20et%20environnement.pdf">https://www.andra.fr/sites/default/files/2023-04/Pièce 07-VPRS-PARTIE 2 Description-Volume 04-Site et environnement.pdf</a>) <a href="#fnref8" class="footnote-backref">↩︎</a></p>
+<li id="fn8" class="footnote-item"><p>Tramm, J.R., Smith, K.S., Forget, B. and Siegel, A.R. (2017). The Random Ray Method for neutral particle transport. <em>Journal of Computational Physics</em>, [online] 342, pp.229–252. doi:<a href="https://doi.org/10.1016/j.jcp.2017.04.038">https://doi.org/10.1016/j.jcp.2017.04.038</a>. <a href="#fnref8" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn9" class="footnote-item"><p>(<a href="https://recherche-expertise.asnr.fr/sites/default/files/documents/actualites_presse/actualites/IRSN_plaquette_tournemire.pdf">https://recherche-expertise.asnr.fr/sites/default/files/documents/actualites_presse/actualites/IRSN_plaquette_tournemire.pdf</a>) <a href="#fnref9" class="footnote-backref">↩︎</a></p>
+<li id="fn9" class="footnote-item"><p>Cahn, R.N. (2000). Cross-section formulae for specific processes. <em>The European Physical Journal C</em>, [online] 15(1-4), pp.215–217. doi:<a href="https://doi.org/10.1007/bf02683431">https://doi.org/10.1007/bf02683431</a>. <a href="#fnref9" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn10" class="footnote-item"><p>(<a href="https://www-pub.iaea.org/MTCD/Publications/PDF/Pub1449_web.pdf">https://www-pub.iaea.org/MTCD/Publications/PDF/Pub1449_web.pdf</a>) <a href="#fnref10" class="footnote-backref">↩︎</a></p>
+<li id="fn10" class="footnote-item"><p><a href="mailto:curtis.suplee@nist.gov">curtis.suplee@nist.gov</a> (2009). <em>XCOM: Photon Cross Sections Database</em>. [online] NIST. Available at: <a href="https://www.nist.gov/pml/xcom-photon-cross-sections-database">https://www.nist.gov/pml/xcom-photon-cross-sections-database</a>. <a href="#fnref10" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn11" class="footnote-item"><p>Amanatides, John &amp; Woo, Andrew. (1987). A Fast Voxel Traversal Algorithm for Ray Tracing. Proceedings of EuroGraphics. 87. <a href="#fnref11" class="footnote-backref">↩︎</a></p>
+<li id="fn11" class="footnote-item"><p>IAEA Safety Standards for protecting people and the environment Disposal of Radioactive Waste. (2007). Available at: <a href="https://www-pub.iaea.org/MTCD/Publications/PDF/Pub1449_web.pdf">https://www-pub.iaea.org/MTCD/Publications/PDF/Pub1449_web.pdf</a>. <a href="#fnref11" class="footnote-backref">↩︎</a> <a href="#fnref11:1" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn12" class="footnote-item"><p><a href="https://www.sciencedirect.com/science/article/pii/S0969804317300878">https://www.sciencedirect.com/science/article/pii/S0969804317300878</a> <a href="#fnref12" class="footnote-backref">↩︎</a></p>
+<li id="fn12" class="footnote-item"><p>alliepiper (2022). <em>Address issues with existing determinism guarantees</em>. [online] GitHub. Available at: <a href="https://github.com/NVIDIA/cccl/issues/886">https://github.com/NVIDIA/cccl/issues/886</a> [Accessed 22 Jan. 2026]. <a href="#fnref12" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn13" class="footnote-item"><p>OECD/NEA benchmark packages. <a href="https://www.oecd-nea.org/tools/abstract/detail/ccc-0079/">https://www.oecd-nea.org/tools/abstract/detail/ccc-0079/</a> <a href="#fnref13" class="footnote-backref">↩︎</a> <a href="#fnref13:1" class="footnote-backref">↩︎</a></p>
+<li id="fn13" class="footnote-item"><p>ANDRA (Agence Nationale pour la gestion des déchets radioactifs) (2022). <em>Dossier D’autorisation De création De l’installation nucléaire De base (inb) cigéo Version préliminaire du rapport de sûreté Partie ii</em>. [online] Available at: <a href="https://www.andra.fr/sites/default/files/2023-04/Pi%C3%A8ce%2007-VPRS-PARTIE%202%20Description-Volume%2004-Site%20et%20environnement.pdf">https://www.andra.fr/sites/default/files/2023-04/Pièce 07-VPRS-PARTIE 2 Description-Volume 04-Site et environnement.pdf</a> [Accessed 22 Jan. 2026]. <a href="#fnref13" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn14" class="footnote-item"><p>Open-source test suites and validation references. <a href="https://github.com/OpenGATE/opengate/tree/master/opengate/tests/src">https://github.com/OpenGATE/opengate/tree/master/opengate/tests/src</a> <a href="#fnref14" class="footnote-backref">↩︎</a> <a href="#fnref14:1" class="footnote-backref">↩︎</a></p>
+<li id="fn14" class="footnote-item"><p>IRSN (Institut de radioprotection et de sûreté nucléaire) (2011). <em>Identifier et prévenir les risques liés au stockage géologique de déchets nucléaires Faire avancer la sûreté nucléaire</em>. [online] Available at: <a href="https://recherche-expertise.asnr.fr/sites/default/files/documents/actualites_presse/actualites/IRSN_plaquette_tournemire.pdf">https://recherche-expertise.asnr.fr/sites/default/files/documents/actualites_presse/actualites/IRSN_plaquette_tournemire.pdf</a> [Accessed 22 Jan. 2026]. <a href="#fnref14" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn15" class="footnote-item"><p><a href="https://www-pub.iaea.org/MTCD/Publications/PDF/Pub1449_web.pdf">https://www-pub.iaea.org/MTCD/Publications/PDF/Pub1449_web.pdf</a> <a href="#fnref15" class="footnote-backref">↩︎</a></p>
+<li id="fn15" class="footnote-item"><p>Grambow, B., Landesman, C. and Ribet, S. (2014). Nuclear waste disposal: I. Laboratory simulation of repository properties. <em>Applied Geochemistry</em>, 49, pp.237–246. doi:<a href="https://doi.org/10.1016/j.apgeochem.2014.05.017">https://doi.org/10.1016/j.apgeochem.2014.05.017</a>. <a href="#fnref15" class="footnote-backref">↩︎</a> <a href="#fnref15:1" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn16" class="footnote-item"><p>IAEA disposal and safety publications. <a href="https://www.iaea.org/sites/default/files/21404640216.pdf">https://www.iaea.org/sites/default/files/21404640216.pdf</a> <a href="#fnref16" class="footnote-backref">↩︎</a></p>
+<li id="fn16" class="footnote-item"><p><a href="http://Oecd-nea.org">Oecd-nea.org</a>. (2022). <em>ISOSHLD, Decay Gamma Dose, Bremsstrahlung Dose Behind Shield, Fission Products Source Strength</em>. [online] Available at: <a href="https://www.oecd-nea.org/tools/abstract/detail/ccc-0079/">https://www.oecd-nea.org/tools/abstract/detail/ccc-0079/</a> [Accessed 22 Jan. 2026]. OECD/NEA benchmark packages. <a href="#fnref16" class="footnote-backref">↩︎</a> <a href="#fnref16:1" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn17" class="footnote-item"><p><a href="https://www.andra.fr/sites/default/files/2023-04/Pi%C3%A8ce%2007-VPRS-PARTIE%202%20Description-Volume%2004-Site%20et%20environnement.pdf">ANDRA</a> and <a href="https://recherche-expertise.asnr.fr/sites/default/files/documents/actualites_presse/actualites/IRSN_plaquette_tournemire.pdf">IRSN</a> public documentation on disposal sites and studies. <a href="#fnref17" class="footnote-backref">↩︎</a></p>
+<li id="fn17" class="footnote-item"><p>OpenGATE (2025). <em>opengate/opengate/tests/src at master · OpenGATE/opengate</em>. [online] GitHub. Available at: <a href="https://github.com/OpenGATE/opengate/tree/master/opengate/tests/src">https://github.com/OpenGATE/opengate/tree/master/opengate/tests/src</a> [Accessed 22 Jan. 2026]. Open-source test suites and validation references. <a href="#fnref17" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn18" class="footnote-item"><p>EU decommissioning assistance and radioactive waste policy summary. <a href="https://eur-lex.europa.eu/EN/legal-content/summary/nuclear-facilities-and-radioactive-waste-eu-decommissioning-assistance-2021-2027.html">https://eur-lex.europa.eu/EN/legal-content/summary/nuclear-facilities-and-radioactive-waste-eu-decommissioning-assistance-2021-2027.html</a> <a href="#fnref18" class="footnote-backref">↩︎</a></p>
+<li id="fn18" class="footnote-item"><p>Amanatides, John &amp; Woo, Andrew. (1987). A Fast Voxel Traversal Algorithm for Ray Tracing. Proceedings of EuroGraphics. 87. <a href="#fnref18" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn19" class="footnote-item"><p>Cross-section and physics references (PDG, NIST XCOM). <a href="https://pdg.lbl.gov/2019/reviews/rpp2019-rev-cross-section-formulae.pdf">https://pdg.lbl.gov/2019/reviews/rpp2019-rev-cross-section-formulae.pdf</a> <a href="#fnref19" class="footnote-backref">↩︎</a></p>
+<li id="fn19" class="footnote-item"><p>Mosorov, V. (2017). The Lambert-Beer law in time domain form and its application. <em>Applied Radiation and Isotopes</em>, 128, pp.1–5. doi:<a href="https://doi.org/10.1016/j.apradiso.2017.06.039">https://doi.org/10.1016/j.apradiso.2017.06.039</a>. <a href="#fnref19" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn20" class="footnote-item"><p><a href="https://www.nist.gov/pml/xcom-photon-cross-sections-database">https://www.nist.gov/pml/xcom-photon-cross-sections-database</a> <a href="#fnref20" class="footnote-backref">↩︎</a></p>
+<li id="fn20" class="footnote-item"><p><a href="http://Openmc.org">Openmc.org</a>. (2025). <em>5. Neutron Physics — OpenMC Documentation</em>. [online] Available at: <a href="https://docs.openmc.org/en/stable/methods/neutron_physics.html">https://docs.openmc.org/en/stable/methods/neutron_physics.html</a>. <a href="#fnref20" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn21" class="footnote-item"><p>JCP reference and INL reports. <a href="https://www.sciencedirect.com/science/article/pii/S0021999117303170#se0240">https://www.sciencedirect.com/science/article/pii/S0021999117303170#se0240</a> <a href="#fnref21" class="footnote-backref">↩︎</a></p>
+<li id="fn21" class="footnote-item"><p>Harbour, L., Ragusa, J., Wang, Y., Schunert, S., Gaston, D. and Dehart, M. (2019). <em>Uncollided-Flux Treatment for Discrete- Ordinate Radiation Transport Solutions in the Rattlesnake Code System</em>. [online] Available at: <a href="https://inldigitallibrary.inl.gov/sites/sti/sti/Sort_18769.pdf">https://inldigitallibrary.inl.gov/sites/sti/sti/Sort_18769.pdf</a> [Accessed 22 Jan. 2026]. <a href="#fnref21" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn22" class="footnote-item"><p><a href="https://inldigitallibrary.inl.gov/sites/sti/sti/Sort_18769.pd">https://inldigitallibrary.inl.gov/sites/sti/sti/Sort_18769.pd</a> <a href="#fnref22" class="footnote-backref">↩︎</a></p>
+<li id="fn22" class="footnote-item"><p>Gaston, D.R., Forget, B., Smith, K.S., Harbour, L.H., Ridley, G.K. and Giudicelli, G.G. (2021). Method of Characteristics for 3D, Full-Core Neutron Transport on Unstructured Mesh. <em>Nuclear Technology</em>, 207(7), pp.931–953. doi:<a href="https://doi.org/10.1080/00295450.2021.1871995">https://doi.org/10.1080/00295450.2021.1871995</a>. <a href="#fnref22" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn23" class="footnote-item"><p><a href="https://docs.openmc.org/en/stable/methods/neutron_physics.html">https://docs.openmc.org/en/stable/methods/neutron_physics.html</a> <a href="#fnref23" class="footnote-backref">↩︎</a></p>
+<li id="fn23" class="footnote-item"><p>Faconti, D. (2026). <em>PlotJuggler Fast, intuitive and extensible time series visualization tool.</em> [online] <a href="http://Plotjuggler.io">Plotjuggler.io</a>. Available at: <a href="https://plotjuggler.io/">https://plotjuggler.io/</a> [Accessed 22 Jan. 2026]. <a href="#fnref23" class="footnote-backref">↩︎</a></p>
 </li>
 </ol>
 </section>
